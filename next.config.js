@@ -1,17 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
+  output: 'export',
   typescript: {
-    // Esto le dice a Hyperlift que compile aunque TypeScript ande de quisquilloso con las rutas
+    // Evita bloqueos estrictos de TypeScript durante la exportación
     ignoreBuildErrors: true,
   },
   eslint: {
+    // Evita bloqueos de formato durante la exportación
     ignoreDuringBuilds: true,
-  },
-  webpack: (config) => {
-    config.resolve.alias['@'] = __dirname;
-    return config;
   },
 }
 
