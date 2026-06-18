@@ -4,9 +4,9 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --omit=dev --ignore-scripts && \
+RUN npm ci --only=production --ignore-scripts && \
     cp -R node_modules /tmp/prod_node_modules && \
-    npm install --ignore-scripts
+    npm ci --ignore-scripts
 
 # ── STAGE 2: Build ───────────────────────────────────────────
 FROM node:18-alpine AS builder
@@ -15,7 +15,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Variables necesarias en build time (valores reales van en Hyperlift)
+# Variables necesarias en build time (valores placeholder, las reales van en Hyperlift)
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 ARG NEXT_PUBLIC_WA_CENTRAL

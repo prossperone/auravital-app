@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aura Vital — Panel Operador</title>
+<style>
+  :root {
+    --teal-900: #04342C;
+    --teal-800: #085041;
+    --teal-700: #0a5c4a;
+    --teal-600: #0F6E56;
+    --teal-400: #1D9E75;
+    --teal-200: #5DCAA5;
+    --teal-100: #9FE1CB;
+    --teal-50:  #E1F5EE;
+    --blue-600: #185FA5;
+    --blue-400: #378ADD;
+    --blue-50:  #E6F1FB;
+    --amber-600: #854F0B;
+    --amber-400: #BA7517;
+    --amber-100: #FAC775;
+    --amber-50:  #FAEEDA;
+    --green-600: #3B6D11;
+    --green-50:  #EAF3DE;
+    --coral-600: #993C1D;
+    --coral-50:  #FAECE7;
+    --gray-900: #1a1a1a;
+    --gray-700: #3d3d3a;
+    --gray-500: #6b6b68;
+    --gray-300: #c4c2bb;
+    --gray-200: #e8e6df;
+    --gray-100: #f2f0ea;
+    --gray-50:  #f7f6f2;
+    --white: #ffffff;
+    --sidebar-w: 240px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--gray-900);
+    background: var(--gray-50);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ── */
+  .app { display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--teal-900);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 50;
+  }
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 1.25rem 1.25rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .logo-dot {
+    width: 28px; height: 28px;
+    background: var(--teal-400);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .logo-dot::after {
+    content: '';
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--white);
+    opacity: 0.85;
+  }
+  .logo-text { font-size: 0.95rem; font-weight: 700; color: var(--white); }
+  .logo-role { font-size: 0.7rem; color: var(--teal-100); opacity: 0.5; }
+
+  .sidebar-nav { flex: 1; padding: 1rem 0.75rem; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.55);
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+  .nav-item.active { background: rgba(29,158,117,0.2); color: var(--teal-200); }
+  .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+  .nav-sep { height: 1px; background: rgba(255,255,255,0.07); margin: 0.5rem 0; }
+  .nav-section-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    padding: 0.75rem 0.75rem 0.25rem;
+  }
+
+  .sidebar-user {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .user-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--teal-700);
+    display: grid; place-items: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--teal-100);
+    flex-shrink: 0;
+  }
+  .user-name { font-size: 0.8rem; font-weight: 500; color: rgba(255,255,255,0.75); }
+  .user-center { font-size: 0.7rem; color: rgba(255,255,255,0.35); }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    height: 56px;
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+  .topbar-title { font-size: 0.95rem; font-weight: 600; color: var(--gray-900); }
+  .topbar-date { font-size: 0.8rem; color: var(--gray-500); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .badge-notif {
+    background: var(--coral-50);
+    color: var(--coral-600);
+    border: 1px solid #F0997B;
+    border-radius: 100px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  /* ── CONTENT ── */
+  .content { padding: 1.75rem; display: flex; flex-direction: column; gap: 1.5rem; }
+
+  /* PANELS: show/hide via JS */
+  .panel { display: none; flex-direction: column; gap: 1.5rem; }
+  .panel.active { display: flex; }
+
+  /* ── STAT CARDS ── */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+  }
+  .stat-label { font-size: 0.75rem; color: var(--gray-500); margin-bottom: 0.4rem; }
+  .stat-val { font-size: 1.6rem; font-weight: 700; color: var(--gray-900); line-height: 1; }
+  .stat-sub { font-size: 0.75rem; color: var(--gray-500); margin-top: 4px; }
+  .stat-card.accent { background: var(--teal-50); border-color: var(--teal-100); }
+  .stat-card.accent .stat-val { color: var(--teal-600); }
+
+  /* ── SECTION HEADER ── */
+  .sec-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0; }
+  .sec-title { font-size: 0.95rem; font-weight: 600; color: var(--gray-900); }
+  .sec-sub { font-size: 0.8rem; color: var(--gray-500); margin-top: 2px; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-title { font-size: 0.875rem; font-weight: 600; color: var(--gray-900); }
+  .card-body { padding: 1.25rem; }
+
+  /* ── APPOINTMENT LIST ── */
+  .appt-list { display: flex; flex-direction: column; gap: 0; }
+  .appt-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--gray-100);
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+  .appt-item:last-child { border-bottom: none; }
+  .appt-item:hover { background: var(--gray-50); }
+  .appt-time {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    min-width: 72px;
+  }
+  .appt-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--teal-50);
+    display: grid; place-items: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--teal-600);
+    flex-shrink: 0;
+  }
+  .appt-info { flex: 1; }
+  .appt-name { font-size: 0.875rem; font-weight: 500; color: var(--gray-900); }
+  .appt-code { font-size: 0.75rem; color: var(--gray-500); font-family: 'SF Mono', 'Fira Code', monospace; }
+  .appt-age { font-size: 0.78rem; color: var(--gray-500); }
+  .appt-status { display: flex; align-items: center; gap: 8px; }
+  .status-pill {
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .status-pending  { background: var(--amber-50);  color: var(--amber-600); }
+  .status-done     { background: var(--green-50);  color: var(--green-600); }
+  .status-absent   { background: var(--coral-50);  color: var(--coral-600); }
+  .btn-scan {
+    background: var(--teal-600);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .btn-scan:hover { background: var(--teal-800); }
+
+  /* ── SCAN FORM (modal-style inline) ── */
+  .scan-form-wrap {
+    display: none;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .scan-form-wrap.open { display: flex; }
+
+  .client-banner {
+    background: var(--teal-50);
+    border: 1px solid var(--teal-100);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .client-banner-ava {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--teal-400);
+    display: grid; place-items: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+  .client-banner-name { font-size: 1rem; font-weight: 600; color: var(--teal-800); }
+  .client-banner-meta { font-size: 0.8rem; color: var(--teal-600); }
+  .client-code-badge {
+    margin-left: auto;
+    background: var(--white);
+    border: 1px solid var(--teal-200);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--teal-600);
+    font-family: monospace;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .areas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 8px;
+  }
+  .area-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.12s;
+    font-size: 0.85rem;
+    color: var(--gray-700);
+    user-select: none;
+  }
+  .area-check input { accent-color: var(--teal-600); }
+  .area-check:has(input:checked) {
+    border-color: var(--teal-400);
+    background: var(--teal-50);
+    color: var(--teal-800);
+  }
+  .area-icon { font-size: 1rem; }
+
+  .supps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 8px;
+  }
+  .supp-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.12s;
+    user-select: none;
+  }
+  .supp-check input { accent-color: var(--teal-600); margin-top: 2px; }
+  .supp-check:has(input:checked) {
+    border-color: var(--teal-400);
+    background: var(--teal-50);
+  }
+  .supp-name { font-size: 0.85rem; font-weight: 500; color: var(--gray-900); }
+  .supp-dose { font-size: 0.75rem; color: var(--gray-500); }
+
+  .obs-textarea {
+    width: 100%;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: var(--gray-900);
+    resize: vertical;
+    min-height: 90px;
+    transition: border-color 0.15s;
+  }
+  .obs-textarea:focus { outline: none; border-color: var(--teal-400); box-shadow: 0 0 0 3px rgba(29,158,117,0.1); }
+
+  .form-actions { display: flex; gap: 10px; align-items: center; }
+  .btn-primary {
+    background: var(--teal-600);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    padding: 0.7rem 1.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn-primary:hover { background: var(--teal-800); }
+  .btn-secondary {
+    background: var(--white);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--gray-300); }
+  .btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #25D366;
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .btn-whatsapp:hover { background: #1da851; }
+
+  /* ── INFOGRAPHIC PREVIEW ── */
+  .infographic-preview {
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .infographic-preview.show { display: flex; }
+  .infographic-card {
+    background: linear-gradient(135deg, var(--teal-900) 0%, #063d2e 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    color: var(--white);
+  }
+  .inf-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .inf-logo { font-size: 0.85rem; font-weight: 700; color: var(--teal-200); letter-spacing: 0.05em; }
+  .inf-client-name { font-size: 1.25rem; font-weight: 700; color: var(--white); }
+  .inf-date { font-size: 0.75rem; color: rgba(255,255,255,0.45); }
+  .inf-section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal-200);
+    margin-bottom: 0.75rem;
+  }
+  .inf-areas { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+  .inf-area-tag {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.8);
+  }
+  .inf-supps { display: flex; flex-direction: column; gap: 8px; }
+  .inf-supp-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+  }
+  .inf-supp-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--teal-200);
+    flex-shrink: 0;
+  }
+  .inf-supp-name { font-size: 0.85rem; color: var(--white); flex: 1; }
+  .inf-supp-dose { font-size: 0.75rem; color: rgba(255,255,255,0.45); }
+  .inf-footer {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+  }
+
+  /* ── LIQUIDACIÓN DAILY ── */
+  .liq-table { width: 100%; border-collapse: collapse; }
+  .liq-table th {
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--gray-200);
+    background: var(--gray-50);
+  }
+  .liq-table td {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--gray-100);
+    color: var(--gray-700);
+  }
+  .liq-table tr:last-child td { border-bottom: none; }
+  .liq-code { font-family: monospace; color: var(--teal-600); font-size: 0.8rem; }
+  .liq-total-row td { font-weight: 700; color: var(--gray-900); border-top: 2px solid var(--gray-200); }
+  .liq-amount { color: var(--green-600); font-weight: 600; }
+
+  .liq-summary-box {
+    background: var(--teal-50);
+    border: 1px solid var(--teal-100);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .liq-summary-label { font-size: 0.875rem; color: var(--teal-700); }
+  .liq-summary-val { font-size: 1.5rem; font-weight: 800; color: var(--teal-600); }
+  .liq-summary-note { font-size: 0.75rem; color: var(--teal-500); margin-top: 2px; }
+
+  .btn-confirm-transfer {
+    width: 100%;
+    background: var(--teal-600);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    padding: 0.85rem;
+    font-size: 0.925rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-confirm-transfer:hover { background: var(--teal-800); }
+
+  /* ── 30 DAY ALERTS ── */
+  .alert-list { display: flex; flex-direction: column; gap: 10px; }
+  .alert-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    transition: border-color 0.15s;
+  }
+  .alert-item:hover { border-color: var(--teal-200); }
+  .alert-days-badge {
+    background: var(--amber-50);
+    color: var(--amber-600);
+    border: 1px solid var(--amber-100);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .alert-days-badge.overdue {
+    background: var(--coral-50);
+    color: var(--coral-600);
+    border-color: #F0997B;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .sidebar { width: 0; overflow: hidden; }
+    .main { margin-left: 0; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .topbar { padding: 0 1rem; }
+    .content { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-dot"></div>
+      <div>
+        <div class="logo-text">Aura Vital</div>
+        <div class="logo-role">Panel Operador</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <button class="nav-item active" onclick="showPanel('agenda')">
+        <span class="nav-icon">📅</span> Agenda del día
+      </button>
+      <button class="nav-item" onclick="showPanel('registro')">
+        <span class="nav-icon">🔬</span> Registrar escáner
+      </button>
+      <button class="nav-item" onclick="showPanel('liquidacion')">
+        <span class="nav-icon">💰</span> Liquidación diaria
+      </button>
+      <div class="nav-sep"></div>
+      <div class="nav-section-label">Seguimiento</div>
+      <button class="nav-item" onclick="showPanel('alertas')">
+        <span class="nav-icon">🔔</span> Alertas 30 días
+      </button>
+      <button class="nav-item" onclick="showPanel('historial')">
+        <span class="nav-icon">📂</span> Historial clientes
+      </button>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar">OP</div>
+      <div>
+        <div class="user-name">Operador Centro</div>
+        <div class="user-center">Villa Mella Norte</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Agenda del día</div>
+        <div class="topbar-date" id="topbar-date"></div>
+      </div>
+      <div class="topbar-right">
+        <span class="badge-notif" id="badge-alertas">⚠ 3 alertas 30 días</span>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ══════════ PANEL: AGENDA ══════════ -->
+      <div class="panel active" id="panel-agenda">
+
+        <div class="stats-row">
+          <div class="stat-card accent">
+            <div class="stat-label">Citas hoy</div>
+            <div class="stat-val">6</div>
+            <div class="stat-sub">3 completadas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pendientes</div>
+            <div class="stat-val">3</div>
+            <div class="stat-sub">Próxima: 2:00 PM</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Comisión hoy</div>
+            <div class="stat-val">RD$900</div>
+            <div class="stat-sub">3 × RD$300</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Este mes</div>
+            <div class="stat-val">58</div>
+            <div class="stat-sub">Clientes atendidos</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Citas de hoy</div>
+            </div>
+            <span style="font-size:0.78rem; color:var(--gray-500)">Toca una cita para registrar el escáner</span>
+          </div>
+          <div class="appt-list" id="appt-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══════════ PANEL: REGISTRO ESCÁNER ══════════ -->
+      <div class="panel" id="panel-registro">
+
+        <!-- Estado inicial: buscar código -->
+        <div id="code-search" class="card">
+          <div class="card-header">
+            <div class="card-title">Registrar resultado de escáner</div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:0.875rem; color:var(--gray-500); margin-bottom:1rem;">
+              Ingresa el código de referencia único del cliente para acceder a su ficha.
+            </p>
+            <div style="display:flex; gap:10px; max-width:420px;">
+              <input type="text" id="input-codigo" placeholder="Ej: AV-2024-52318"
+                style="flex:1; border:1.5px solid var(--gray-200); border-radius:10px; padding:0.65rem 1rem; font-size:0.95rem; font-family:monospace; color:var(--gray-900);"
+                oninput="this.value=this.value.toUpperCase()"/>
+              <button class="btn-primary" onclick="buscarCliente()" style="white-space:nowrap;">Buscar cliente</button>
+            </div>
+            <p id="code-error" style="font-size:0.8rem; color:var(--coral-600); margin-top:8px; display:none;">
+              Código no encontrado. Verifica el número e intenta de nuevo.
+            </p>
+          </div>
+        </div>
+
+        <!-- Formulario escáner (aparece tras buscar) -->
+        <div class="scan-form-wrap" id="scan-form">
+
+          <!-- Banner cliente -->
+          <div class="client-banner">
+            <div class="client-banner-ava" id="sf-avatar">MR</div>
+            <div>
+              <div class="client-banner-name" id="sf-nombre">—</div>
+              <div class="client-banner-meta" id="sf-meta">—</div>
+            </div>
+            <div class="client-code-badge" id="sf-code">AV-XXXXX</div>
+          </div>
+
+          <!-- Áreas de atención -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Áreas que necesitan más atención</div>
+            </div>
+            <div class="card-body">
+              <label class="form-label">Selecciona todas las que apliquen</label>
+              <div class="areas-grid" id="areas-grid">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Suplementos recomendados -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Suplementos recomendados</div>
+            </div>
+            <div class="card-body">
+              <label class="form-label">Selecciona los que apliquen al resultado</label>
+              <div class="supps-grid" id="supps-grid">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Observaciones -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">Observaciones del operador</div></div>
+            <div class="card-body">
+              <textarea class="obs-textarea" id="obs-text"
+                placeholder="Notas adicionales del análisis, recomendaciones especiales, próximos pasos..."></textarea>
+            </div>
+          </div>
+
+          <!-- Acciones -->
+          <div class="card">
+            <div class="card-body">
+              <div class="form-actions">
+                <button class="btn-primary" onclick="generarInfografia()">📊 Generar infografía</button>
+                <button class="btn-secondary" onclick="cancelarRegistro()">← Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Infografía preview -->
+          <div class="infographic-preview" id="infographic-preview">
+            <div class="sec-header">
+              <div>
+                <div class="sec-title">Infografía generada</div>
+                <div class="sec-sub">Lista para compartir con el cliente</div>
+              </div>
+            </div>
+            <div class="infographic-card">
+              <div class="inf-header">
+                <div>
+                  <div class="inf-logo">AURA VITAL</div>
+                  <div class="inf-client-name" id="inf-client-name">—</div>
+                  <div class="inf-date" id="inf-date">—</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:0.7rem; color:rgba(255,255,255,0.35); margin-bottom:4px;">Código de referencia</div>
+                  <div style="font-size:0.9rem; font-weight:700; color:var(--teal-200); font-family:monospace;" id="inf-code">—</div>
+                </div>
+              </div>
+              <div style="margin-bottom:1.25rem;">
+                <div class="inf-section-title">Áreas de atención identificadas</div>
+                <div class="inf-areas" id="inf-areas"></div>
+              </div>
+              <div>
+                <div class="inf-section-title">Suplementos recomendados</div>
+                <div class="inf-supps" id="inf-supps"></div>
+              </div>
+              <div class="inf-footer">
+                Plan de seguimiento activo · Próxima evaluación en 30 días<br>
+                ⚠ Este análisis no sustituye un diagnóstico médico. Es una evaluación orientativa de bienestar.
+              </div>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <a id="wa-infografia" href="#" target="_blank" class="btn-whatsapp">
+                💬 Enviar por WhatsApp
+              </a>
+              <button class="btn-secondary" onclick="window.print()">🖨 Imprimir</button>
+              <button class="btn-secondary" onclick="resetScanForm()">← Nuevo registro</button>
+            </div>
+
+            <div style="background:var(--teal-50); border:1px solid var(--teal-100); border-radius:10px; padding:1rem; font-size:0.82rem; color:var(--teal-700);">
+              ✅ <strong>Comisión registrada:</strong> RD$300 sumados al balance del día.
+              El plan de seguimiento de 90 días fue activado automáticamente para este cliente.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══════════ PANEL: LIQUIDACIÓN ══════════ -->
+      <div class="panel" id="panel-liquidacion">
+
+        <div class="liq-summary-box">
+          <div>
+            <div class="liq-summary-label">Total comisiones del día</div>
+            <div class="liq-summary-val">RD$ 900</div>
+            <div class="liq-summary-note">3 clientes atendidos hoy · RD$300 c/u</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.75rem; color:var(--teal-600); margin-bottom:4px;">Transferir a:</div>
+            <div style="font-size:0.875rem; font-weight:700; color:var(--teal-800);">Cuenta Aura Vital</div>
+            <div style="font-size:0.75rem; color:var(--teal-600);">BHD León · ****4872</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Detalle de atenciones del día</div>
+          </div>
+          <table class="liq-table">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Cliente</th>
+                <th>Código</th>
+                <th>Estado</th>
+                <th>Comisión</th>
+              </tr>
+            </thead>
+            <tbody id="liq-tbody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-body" style="display:flex; flex-direction:column; gap:1rem;">
+            <div style="font-size:0.875rem; color:var(--gray-700); line-height:1.6;">
+              Al confirmar la transferencia, el sistema registra el pago y genera el comprobante del día para Aura Vital. El dueño del proyecto recibirá la notificación automáticamente.
+            </div>
+            <button class="btn-confirm-transfer" onclick="confirmarTransferencia()">
+              💳 Confirmar transferencia del día — RD$900
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ PANEL: ALERTAS 30 DÍAS ══════════ -->
+      <div class="panel" id="panel-alertas">
+        <div>
+          <div class="sec-title">Clientes para reevaluación</div>
+          <div class="sec-sub" style="margin-top:4px;">Clientes que han cumplido 30 o más días desde su último escáner</div>
+        </div>
+        <div class="alert-list" id="alert-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- ══════════ PANEL: HISTORIAL ══════════ -->
+      <div class="panel" id="panel-historial">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Historial de clientes</div>
+          </div>
+          <div class="card-body">
+            <p style="font-size:0.875rem; color:var(--gray-500);">
+              Aquí aparecerá el historial completo de todos los clientes atendidos en tu centro con sus informes y códigos de referencia.
+            </p>
+            <div style="margin-top:1.5rem; padding:2.5rem; text-align:center; background:var(--gray-50); border-radius:12px;">
+              <div style="font-size:2rem; margin-bottom:0.5rem;">📂</div>
+              <div style="font-size:0.875rem; color:var(--gray-500);">58 clientes atendidos este mes</div>
+              <button class="btn-primary" style="margin-top:1rem; font-size:0.875rem;">Ver historial completo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+/* ── DATA ── */
+const HOY_CITAS = [
+  { hora:"9:00 AM",  nombre:"Rosa Montero",    edad:42, codigo:"AV-2024-51204", tel:"8095550101", status:"done"    },
+  { hora:"10:00 AM", nombre:"Pedro Alcántara",  edad:55, codigo:"AV-2024-51887", tel:"8095550102", status:"done"    },
+  { hora:"11:00 AM", nombre:"Lucía Fernández",  edad:38, codigo:"AV-2024-52001", tel:"8095550103", status:"done"    },
+  { hora:"2:00 PM",  nombre:"Carlos Jiménez",   edad:47, codigo:"AV-2024-52318", tel:"8095550104", status:"pending" },
+  { hora:"3:00 PM",  nombre:"Ana De Los Santos",edad:33, codigo:"AV-2024-52445", tel:"8095550105", status:"pending" },
+  { hora:"4:00 PM",  nombre:"Marcos Batista",   edad:61, codigo:"AV-2024-52612", tel:"8095550106", status:"pending" },
+];
+
+const AREAS = [
+  { icon:"🫀", label:"Sistema cardiovascular" },
+  { icon:"🍽", label:"Sistema digestivo" },
+  { icon:"⚡", label:"Energía celular" },
+  { icon:"🧠", label:"Memoria y concentración" },
+  { icon:"🦷", label:"Sistema óseo" },
+  { icon:"🫁", label:"Sistema respiratorio" },
+  { icon:"🧬", label:"Metabolismo basal" },
+  { icon:"💧", label:"Función renal" },
+  { icon:"🍀", label:"Función hepática" },
+  { icon:"🌿", label:"Bienestar hormonal" },
+  { icon:"🛡", label:"Sistema inmune" },
+  { icon:"🌸", label:"Estrés oxidativo" },
+  { icon:"💊", label:"Absorción de vitaminas" },
+  { icon:"⚗️", label:"Niveles de minerales" },
+  { icon:"🧴", label:"Colágeno y piel" },
+  { icon:"😴", label:"Calidad del sueño" },
+];
+
+const SUPLEMENTOS = [
+  { nombre:"Vitamina D3",        dosis:"5,000 UI · 1 vez al día con comida" },
+  { nombre:"Magnesio Glicinato", dosis:"400 mg · Antes de dormir" },
+  { nombre:"Omega-3",            dosis:"2 cápsulas · Con el almuerzo" },
+  { nombre:"Vitamina C",         dosis:"1,000 mg · 2 veces al día" },
+  { nombre:"Probióticos",        dosis:"1 cápsula · En ayunas" },
+  { nombre:"Zinc",               dosis:"25 mg · 1 vez al día con comida" },
+  { nombre:"Complejo B",         dosis:"1 cápsula · En la mañana" },
+  { nombre:"Coenzima Q10",       dosis:"100 mg · Con desayuno" },
+  { nombre:"Colágeno Hidrolizado",dosis:"1 sobre · En agua por la mañana" },
+  { nombre:"Hierro Quelado",     dosis:"25 mg · En ayunas" },
+  { nombre:"Ashwagandha",        dosis:"600 mg · Antes de dormir" },
+  { nombre:"Cúrcuma + Pimienta", dosis:"1 cápsula · Con comida" },
+];
+
+const ALERTAS_30 = [
+  { nombre:"Rosa Montero",    codigo:"AV-2024-38201", dias:35, tel:"8095550101" },
+  { nombre:"Luis Tavarez",    codigo:"AV-2024-39442", dias:32, tel:"8095550201" },
+  { nombre:"Carmen Vásquez",  codigo:"AV-2024-40018", dias:30, tel:"8095550301" },
+];
+
+/* ── UTILS ── */
+function initials(name) {
+  return name.split(" ").slice(0,2).map(w=>w[0]).join("").toUpperCase();
+}
+
+function formatDate(d) {
+  return d.toLocaleDateString("es-DO",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+}
+
+/* ── TOPBAR DATE ── */
+document.getElementById("topbar-date").textContent = formatDate(new Date());
+
+/* ── PANEL SWITCHER ── */
+function showPanel(name) {
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
+  document.getElementById("panel-"+name).classList.add("active");
+  event.currentTarget.classList.add("active");
+  const titles = {agenda:"Agenda del día", registro:"Registrar escáner",
+                  liquidacion:"Liquidación diaria", alertas:"Alertas 30 días", historial:"Historial"};
+  document.getElementById("topbar-title").textContent = titles[name] || name;
+}
+
+/* ── BUILD AGENDA ── */
+function buildAgenda() {
+  const list = document.getElementById("appt-list");
+  list.innerHTML = "";
+  HOY_CITAS.forEach((c,i) => {
+    const div = document.createElement("div");
+    div.className = "appt-item";
+    const statusLabels = { done:"Completado", pending:"Pendiente", absent:"No asistió" };
+    div.innerHTML = `
+      <div class="appt-time">${c.hora}</div>
+      <div class="appt-avatar">${initials(c.nombre)}</div>
+      <div class="appt-info">
+        <div class="appt-name">${c.nombre}</div>
+        <div class="appt-code">${c.codigo} · ${c.edad} años</div>
+      </div>
+      <div class="appt-status">
+        <span class="status-pill status-${c.status}">${statusLabels[c.status]}</span>
+        ${c.status === "pending" ? `<button class="btn-scan" onclick="abrirRegistro('${c.codigo}')">Registrar escáner</button>` : ""}
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+/* ── BUILD AREAS & SUPPS ── */
+function buildAreas() {
+  const g = document.getElementById("areas-grid");
+  g.innerHTML = "";
+  AREAS.forEach((a,i) => {
+    const label = document.createElement("label");
+    label.className = "area-check";
+    label.innerHTML = `<input type="checkbox" name="area" value="${a.label}"><span class="area-icon">${a.icon}</span> ${a.label}`;
+    g.appendChild(label);
+  });
+}
+function buildSupps() {
+  const g = document.getElementById("supps-grid");
+  g.innerHTML = "";
+  SUPLEMENTOS.forEach(s => {
+    const label = document.createElement("label");
+    label.className = "supp-check";
+    label.innerHTML = `<input type="checkbox" name="supp" value="${s.nombre}"><div><div class="supp-name">${s.nombre}</div><div class="supp-dose">${s.dosis}</div></div>`;
+    g.appendChild(label);
+  });
+}
+buildAreas();
+buildSupps();
+
+/* ── BUSCAR CLIENTE POR CÓDIGO ── */
+let clienteActivo = null;
+
+function buscarCliente() {
+  const cod = document.getElementById("input-codigo").value.trim().toUpperCase();
+  const cliente = HOY_CITAS.find(c => c.codigo === cod);
+  if (!cliente) {
+    document.getElementById("code-error").style.display = "block";
+    return;
+  }
+  document.getElementById("code-error").style.display = "none";
+  abrirRegistro(cod);
+}
+
+function abrirRegistro(codigo) {
+  const cliente = HOY_CITAS.find(c => c.codigo === codigo);
+  if (!cliente) return;
+  clienteActivo = cliente;
+  document.getElementById("sf-avatar").textContent = initials(cliente.nombre);
+  document.getElementById("sf-nombre").textContent = cliente.nombre;
+  document.getElementById("sf-meta").textContent = `${cliente.edad} años · ${cliente.hora} · ${cliente.tel}`;
+  document.getElementById("sf-code").textContent = cliente.codigo;
+  document.getElementById("infographic-preview").classList.remove("show");
+  document.querySelectorAll("input[name='area']").forEach(i=>i.checked=false);
+  document.querySelectorAll("input[name='supp']").forEach(i=>i.checked=false);
+  document.getElementById("obs-text").value = "";
+  document.getElementById("code-search").style.display = "none";
+  document.getElementById("scan-form").classList.add("open");
+  showPanel("registro");
+  document.querySelector(".nav-item:nth-child(3)").classList.remove("active");
+  document.querySelector(".nav-item:nth-child(3)").classList.add("active");
+}
+
+function cancelarRegistro() {
+  document.getElementById("scan-form").classList.remove("open");
+  document.getElementById("code-search").style.display = "block";
+  document.getElementById("input-codigo").value = "";
+  clienteActivo = null;
+}
+
+function resetScanForm() {
+  cancelarRegistro();
+}
+
+/* ── GENERAR INFOGRAFÍA ── */
+function generarInfografia() {
+  if (!clienteActivo) return;
+  const areasSelec = [...document.querySelectorAll("input[name='area']:checked")].map(i=>i.value);
+  const suppsSelec = [...document.querySelectorAll("input[name='supp']:checked")].map(i=>i.value);
+  if (areasSelec.length === 0 || suppsSelec.length === 0) {
+    alert("Selecciona al menos un área de atención y un suplemento para generar la infografía.");
+    return;
+  }
+  document.getElementById("inf-client-name").textContent = clienteActivo.nombre;
+  document.getElementById("inf-date").textContent = `Análisis: ${formatDate(new Date())}`;
+  document.getElementById("inf-code").textContent = clienteActivo.codigo;
+  const areasEl = document.getElementById("inf-areas");
+  areasEl.innerHTML = areasSelec.map(a=>`<span class="inf-area-tag">${a}</span>`).join("");
+  const suppsData = SUPLEMENTOS.filter(s => suppsSelec.includes(s.nombre));
+  const suppsEl = document.getElementById("inf-supps");
+  suppsEl.innerHTML = suppsData.map(s=>`
+    <div class="inf-supp-row">
+      <div class="inf-supp-dot"></div>
+      <div class="inf-supp-name">${s.nombre}</div>
+      <div class="inf-supp-dose">${s.dosis}</div>
+    </div>`).join("");
+  const msg = `Hola ${clienteActivo.nombre.split(" ")[0]}! 🌿 Aquí está tu infografía de bienestar de Aura Vital (código: ${clienteActivo.codigo}). Tus áreas de atención son: ${areasSelec.join(", ")}. Los suplementos recomendados para ti: ${suppsSelec.join(", ")}. ⚠ Este análisis no sustituye un diagnóstico médico. ¡Nos vemos en 30 días para tu reevaluación!`;
+  document.getElementById("wa-infografia").href = `https://wa.me/${clienteActivo.tel}?text=${encodeURIComponent(msg)}`;
+  document.getElementById("infographic-preview").classList.add("show");
+  document.getElementById("infographic-preview").scrollIntoView({ behavior:"smooth", block:"start" });
+  const citaIdx = HOY_CITAS.findIndex(c=>c.codigo===clienteActivo.codigo);
+  if (citaIdx !== -1) HOY_CITAS[citaIdx].status = "done";
+  buildAgenda();
+}
+
+/* ── LIQUIDACIÓN ── */
+function buildLiquidacion() {
+  const tbody = document.getElementById("liq-tbody");
+  tbody.innerHTML = "";
+  let total = 0;
+  HOY_CITAS.forEach(c => {
+    const tr = document.createElement("tr");
+    const comision = c.status === "done" ? 300 : 0;
+    total += comision;
+    tr.innerHTML = `
+      <td>${c.hora}</td>
+      <td>${c.nombre}</td>
+      <td class="liq-code">${c.codigo}</td>
+      <td><span class="status-pill status-${c.status}">${c.status==="done"?"Completado":c.status==="pending"?"Pendiente":"No asistió"}</span></td>
+      <td class="liq-amount">${comision > 0 ? `RD$${comision}` : "—"}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  const totalRow = document.createElement("tr");
+  totalRow.className = "liq-total-row";
+  totalRow.innerHTML = `<td colspan="4" style="text-align:right; padding-right:1rem;">Total a transferir hoy</td><td class="liq-amount">RD$${total}</td>`;
+  tbody.appendChild(totalRow);
+}
+buildLiquidacion();
+
+function confirmarTransferencia() {
+  const msg = `Hola Aura Vital! Confirmo la transferencia del día ${new Date().toLocaleDateString("es-DO")}. Centro: Villa Mella Norte. Clientes atendidos: 3. Monto transferido: RD$900. Por favor confirmen la recepción.`;
+  const wa = `https://wa.me/18095550000?text=${encodeURIComponent(msg)}`;
+  if (confirm("¿Confirmar que realizaste la transferencia de RD$900 a Aura Vital hoy?")) {
+    window.open(wa, "_blank");
+  }
+}
+
+/* ── ALERTAS 30 DÍAS ── */
+function buildAlertas() {
+  const list = document.getElementById("alert-list");
+  list.innerHTML = "";
+  ALERTAS_30.forEach(a => {
+    const div = document.createElement("div");
+    div.className = "alert-item";
+    const msg = `Hola ${a.nombre.split(" ")[0]}! 🌿 Han pasado ${a.dias} días desde tu análisis Aura Vital (${a.codigo}). Es momento de tu reevaluación para medir tu progreso. ¿Deseas agendar tu próxima cita?`;
+    div.innerHTML = `
+      <div class="appt-avatar">${initials(a.nombre)}</div>
+      <div style="flex:1;">
+        <div style="font-size:0.875rem; font-weight:500; color:var(--gray-900);">${a.nombre}</div>
+        <div style="font-size:0.75rem; color:var(--gray-500); font-family:monospace;">${a.codigo}</div>
+      </div>
+      <span class="alert-days-badge ${a.dias > 30 ? "overdue" : ""}">${a.dias} días</span>
+      <a href="https://wa.me/${a.tel}?text=${encodeURIComponent(msg)}" target="_blank" class="btn-whatsapp" style="font-size:0.78rem; padding:0.4rem 0.85rem;">
+        💬 Recordar
+      </a>
+    `;
+    list.appendChild(div);
+  });
+}
+
+buildAgenda();
+buildAlertas();
+</script>
+</body>
+</html>

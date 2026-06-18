@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aura Vital — Análisis de Bienestar Celular</title>
+<style>
+  :root {
+    --teal-900: #04342C;
+    --teal-800: #085041;
+    --teal-600: #0F6E56;
+    --teal-400: #1D9E75;
+    --teal-200: #5DCAA5;
+    --teal-100: #9FE1CB;
+    --teal-50:  #E1F5EE;
+    --blue-600: #185FA5;
+    --blue-400: #378ADD;
+    --blue-50:  #E6F1FB;
+    --gray-900: #1a1a1a;
+    --gray-700: #3d3d3a;
+    --gray-500: #6b6b68;
+    --gray-200: #e8e6df;
+    --gray-50:  #f7f6f2;
+    --white: #ffffff;
+    --warning-bg: #FAEEDA;
+    --warning-text: #633806;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--gray-900);
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 1.5rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--teal-800);
+    text-decoration: none;
+  }
+  .nav-logo-dot {
+    width: 28px; height: 28px;
+    background: var(--teal-400);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+  }
+  .nav-logo-dot::after {
+    content: '';
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--white);
+    opacity: 0.85;
+  }
+  .nav-cta {
+    background: var(--teal-600);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .nav-cta:hover { background: var(--teal-800); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: calc(100vh - 60px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 3rem;
+    padding: 4rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--teal-50);
+    color: var(--teal-600);
+    border: 1px solid var(--teal-100);
+    border-radius: 100px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.02em;
+  }
+  .hero-eyebrow-dot {
+    width: 6px; height: 6px;
+    background: var(--teal-400);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--gray-900);
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.02em;
+  }
+  .hero h1 .accent { color: var(--teal-600); }
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--gray-500);
+    margin-bottom: 2rem;
+    max-width: 480px;
+    line-height: 1.7;
+  }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--teal-600);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    padding: 0.85rem 1.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--teal-800); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--teal-600);
+    border: 1.5px solid var(--teal-200);
+    border-radius: 10px;
+    padding: 0.85rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-ghost:hover { background: var(--teal-50); border-color: var(--teal-400); }
+
+  .hero-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--gray-200);
+  }
+  .hero-stat-val { font-size: 1.5rem; font-weight: 700; color: var(--teal-600); }
+  .hero-stat-lbl { font-size: 0.8rem; color: var(--gray-500); }
+
+  /* Hero visual right */
+  .hero-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+  }
+  .scanner-anim {
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 1;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #E1F5EE 0%, #dff2f3 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--teal-100);
+  }
+  .scanner-ring {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 2px solid var(--teal-200);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .scanner-ring::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: var(--teal-400);
+    animation: spin 2s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .scanner-inner {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 0 0 1px var(--teal-100);
+  }
+  .scanner-icon { font-size: 2rem; }
+  .scanner-label { font-size: 0.65rem; color: var(--teal-600); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .scanner-line {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--teal-400), transparent);
+    animation: scan 2s ease-in-out infinite;
+    opacity: 0.7;
+  }
+  @keyframes scan {
+    0% { top: 20%; }
+    50% { top: 80%; }
+    100% { top: 20%; }
+  }
+  .scanner-badges {
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    gap: 8px;
+  }
+  .s-badge {
+    background: var(--white);
+    border: 1px solid var(--teal-100);
+    border-radius: 100px;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    color: var(--teal-600);
+    font-weight: 500;
+  }
+
+  /* ── SECTION WRAPPER ── */
+  .section { padding: 5rem 1.5rem; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal-400);
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+  }
+  .section-sub {
+    font-size: 1.05rem;
+    color: var(--gray-500);
+    max-width: 600px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+  }
+
+  /* ── VIDEO SECTION ── */
+  .video-section { background: var(--gray-50); }
+  .video-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  .video-embed {
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+    background: var(--gray-200);
+    position: relative;
+  }
+  .video-embed iframe {
+    width: 100%; height: 100%;
+    border: none;
+  }
+  .video-placeholder {
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: var(--teal-900);
+    color: var(--teal-100);
+  }
+  .video-placeholder-icon { font-size: 3rem; opacity: 0.6; }
+  .video-placeholder-text { font-size: 0.85rem; opacity: 0.5; }
+  .video-info h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+  .video-info p {
+    font-size: 0.95rem;
+    color: var(--gray-500);
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+  .video-pills { display: flex; flex-direction: column; gap: 10px; margin-top: 1.5rem; }
+  .pill {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    font-size: 0.875rem;
+    color: var(--gray-700);
+    line-height: 1.4;
+  }
+  .pill-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .disclaimer-pill {
+    background: var(--warning-bg);
+    border-color: #FAC775;
+    color: var(--warning-text);
+    font-size: 0.82rem;
+    margin-top: 0.5rem;
+  }
+
+  /* ── INDICATORS GRID ── */
+  .indicators-section { background: var(--white); }
+  .indicators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+  .indicator-card {
+    background: var(--teal-50);
+    border: 1px solid var(--teal-100);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.875rem;
+    color: var(--teal-800);
+    font-weight: 500;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .indicator-card:hover { transform: translateY(-2px); border-color: var(--teal-200); }
+  .ind-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--teal-400);
+    flex-shrink: 0;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-section { background: var(--teal-900); }
+  .how-section .section-label { color: var(--teal-200); }
+  .how-section .section-title { color: var(--white); }
+  .how-section .section-sub { color: var(--teal-100); opacity: 0.7; }
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+  .step-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.75rem 1.5rem;
+    transition: background 0.2s;
+  }
+  .step-card:hover { background: rgba(255,255,255,0.08); }
+  .step-num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--teal-200);
+    margin-bottom: 0.75rem;
+  }
+  .step-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+  .step-card h3 { font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: 0.5rem; }
+  .step-card p { font-size: 0.875rem; color: var(--teal-100); opacity: 0.7; line-height: 1.6; }
+
+  /* ── BOOKING FORM ── */
+  .booking-section { background: var(--gray-50); }
+  .booking-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 680px;
+    margin: 0 auto;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+  }
+  .booking-card h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 0.5rem;
+  }
+  .booking-card p.sub {
+    font-size: 0.9rem;
+    color: var(--gray-500);
+    margin-bottom: 2rem;
+  }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    margin-bottom: 0.4rem;
+  }
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    color: var(--gray-900);
+    background: var(--white);
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+    font-family: inherit;
+  }
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: var(--teal-400);
+    box-shadow: 0 0 0 3px rgba(29,158,117,0.12);
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-disclaimer {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    background: var(--warning-bg);
+    border: 1px solid #FAC775;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.8rem;
+    color: var(--warning-text);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+  .btn-book {
+    width: 100%;
+    background: var(--teal-600);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    font-family: inherit;
+  }
+  .btn-book:hover { background: var(--teal-800); }
+  .btn-book:active { transform: scale(0.99); }
+  .btn-book:disabled { background: var(--gray-200); color: var(--gray-500); cursor: not-allowed; transform: none; }
+
+  /* ── CONFIRMATION PANEL ── */
+  .confirmation-panel {
+    display: none;
+    text-align: center;
+    padding: 1rem;
+  }
+  .confirmation-panel.show { display: block; }
+  .conf-code {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--teal-600);
+    letter-spacing: 0.05em;
+    font-variant-numeric: tabular-nums;
+    margin: 1rem 0;
+  }
+  .conf-desc {
+    font-size: 0.9rem;
+    color: var(--gray-500);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+  .btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #25D366;
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s, transform 0.1s;
+    font-family: inherit;
+    margin-bottom: 1rem;
+  }
+  .btn-whatsapp:hover { background: #1DA851; }
+  .btn-whatsapp:active { transform: scale(0.98); }
+  .whatsapp-icon { font-size: 1.2rem; }
+  .conf-note { font-size: 0.78rem; color: var(--gray-500); }
+  .conf-email-note {
+    margin-top: 1rem;
+    padding: 12px;
+    background: var(--blue-50);
+    border-radius: 10px;
+    font-size: 0.82rem;
+    color: var(--blue-600);
+  }
+  .btn-reset {
+    margin-top: 1.5rem;
+    background: none;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.15s;
+  }
+  .btn-reset:hover { border-color: var(--gray-500); color: var(--gray-700); }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-section { background: var(--white); }
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+  .testimonial-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .stars { color: #EF9F27; font-size: 0.85rem; margin-bottom: 0.75rem; letter-spacing: 2px; }
+  .testimonial-text { font-size: 0.925rem; color: var(--gray-700); line-height: 1.7; margin-bottom: 1rem; }
+  .testimonial-author { display: flex; align-items: center; gap: 10px; }
+  .author-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--teal-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--teal-800);
+    flex-shrink: 0;
+  }
+  .author-name { font-size: 0.875rem; font-weight: 600; color: var(--gray-900); }
+  .author-location { font-size: 0.78rem; color: var(--gray-500); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--teal-900);
+    color: var(--teal-100);
+    padding: 3rem 1.5rem 2rem;
+    text-align: center;
+  }
+  .footer-logo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.75rem;
+  }
+  .footer-legal {
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 0.8rem;
+    opacity: 0.55;
+    line-height: 1.6;
+  }
+  .footer-bottom {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.78rem;
+    opacity: 0.4;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero {
+      grid-template-columns: 1fr;
+      padding: 2.5rem 1.25rem;
+      gap: 2rem;
+      min-height: auto;
+    }
+    .hero-visual { order: -1; }
+    .scanner-anim { max-width: 260px; }
+    .hero-stats { gap: 1.25rem; }
+    .video-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .booking-card { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    Aura Vital
+  </a>
+  <a href="#agendar" class="nav-cta">Agendar ahora</a>
+</nav>
+
+<!-- HERO -->
+<section class="section" style="padding-top: 2rem; padding-bottom: 2rem;">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="hero-eyebrow-dot"></span>
+        Análisis cuántico no invasivo
+      </div>
+      <h1>Conoce tu bienestar <span class="accent">desde adentro</span></h1>
+      <p class="hero-sub">
+        Más de 45 indicadores de salud evaluados en 5 minutos, sin agujas ni procedimientos invasivos. Recibe un plan de bienestar personalizado con resultados inmediatos.
+      </p>
+      <div class="hero-actions">
+        <a href="#agendar" class="btn-primary">Agendar mi análisis</a>
+        <a href="#como-funciona" class="btn-ghost">¿Cómo funciona?</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val">45+</div>
+          <div class="hero-stat-lbl">Indicadores evaluados</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">5 min</div>
+          <div class="hero-stat-lbl">Duración del análisis</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">10</div>
+          <div class="hero-stat-lbl">Centros en RD</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="scanner-anim">
+        <div class="scanner-line"></div>
+        <div class="scanner-ring">
+          <div class="scanner-inner">
+            <span class="scanner-icon">🫀</span>
+            <span class="scanner-label">Escaneando</span>
+          </div>
+        </div>
+        <div class="scanner-badges">
+          <span class="s-badge">No invasivo</span>
+          <span class="s-badge">Resultados ya</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO + INFO -->
+<section class="section video-section" id="que-incluye">
+  <div class="section-inner">
+    <div class="video-grid">
+      <div>
+        <div class="video-embed">
+          <!--
+            INSTRUCCIÓN: Reemplaza el src con tu URL de YouTube.
+            Formato: https://www.youtube.com/embed/TU_VIDEO_ID
+            Ejemplo: https://www.youtube.com/embed/dQw4w9WgXcQ
+          -->
+          <div class="video-placeholder">
+            <span class="video-placeholder-icon">▶</span>
+            <span class="video-placeholder-text">Inserta aquí el ID de YouTube</span>
+          </div>
+          <!-- DESCOMENTA ESTO Y PON TU VIDEO_ID:
+          <iframe
+            src="https://www.youtube.com/embed/VIDEO_ID?rel=0&modestbranding=1"
+            title="Aura Vital — Análisis de bienestar celular"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+          -->
+        </div>
+      </div>
+      <div class="video-info">
+        <h3>¿Qué incluye el análisis de bienestar?</h3>
+        <p>
+          El análisis incluye una evaluación rápida y no invasiva de más de 45 indicadores relacionados con circulación, metabolismo, digestión, hígado, riñones, vitaminas, minerales, sistema óseo, memoria, estrés oxidativo, colágeno, bienestar hormonal y más.
+        </p>
+        <p>
+          Además, te explicamos los resultados mediante nuestro sistema <strong>"Efecto Dominó"</strong>, para identificar qué áreas podrían estar influyendo en tu bienestar general.
+        </p>
+        <div class="video-pills">
+          <div class="pill">
+            <span class="pill-icon">⏱</span>
+            <span>Duración aproximada: <strong>5 minutos</strong></span>
+          </div>
+          <div class="pill">
+            <span class="pill-icon">📋</span>
+            <span>Incluye <strong>explicación personalizada</strong> de tus resultados</span>
+          </div>
+          <div class="pill disclaimer-pill">
+            <span class="pill-icon">⚠️</span>
+            <span>No es un diagnóstico médico; es una evaluación orientativa para bienestar general.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INDICATORS -->
+<section class="section indicators-section" id="indicadores">
+  <div class="section-inner">
+    <div class="section-label">Cobertura del análisis</div>
+    <h2 class="section-title">45+ indicadores de bienestar</h2>
+    <p class="section-sub">Cada análisis cubre múltiples sistemas del cuerpo para darte una visión completa de tu estado de bienestar actual.</p>
+    <div class="indicators-grid">
+      <div class="indicator-card"><span class="ind-dot"></span>Circulación sanguínea</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Metabolismo basal</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Sistema digestivo</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Función hepática</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Función renal</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Niveles de vitaminas</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Minerales esenciales</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Sistema óseo</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Memoria y concentración</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Estrés oxidativo</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Niveles de colágeno</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Bienestar hormonal</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Energía celular</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Sistema cardiovascular</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Inmunidad general</div>
+      <div class="indicator-card"><span class="ind-dot"></span>Y muchos más...</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section how-section" id="como-funciona">
+  <div class="section-inner">
+    <div class="section-label">El proceso</div>
+    <h2 class="section-title">Simple, rápido y sin incomodidades</h2>
+    <p class="section-sub">Todo el proceso desde que agendas hasta que recibes tu plan toma menos de 20 minutos.</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">PASO 01</div>
+        <div class="step-icon">📍</div>
+        <h3>Elige tu centro</h3>
+        <p>Selecciona tu provincia y el centro más cercano a ti. Coordinamos tu cita vía WhatsApp.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">PASO 02</div>
+        <div class="step-icon">📱</div>
+        <h3>Confirma por WhatsApp</h3>
+        <p>Recibes un código único de reserva. Con un tap lo envías al centro para confirmar.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">PASO 03</div>
+        <div class="step-icon">🔬</div>
+        <h3>Realiza tu análisis</h3>
+        <p>El escáner cuántico evalúa más de 45 indicadores en solo 5 minutos. Sin agujas.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">PASO 04</div>
+        <div class="step-icon">📊</div>
+        <h3>Recibe tu plan</h3>
+        <p>Obtienes una infografía digital con tus resultados y un plan de bienestar personalizado de 90 días.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING FORM -->
+<section class="section booking-section" id="agendar">
+  <div class="section-inner">
+    <div style="text-align:center; margin-bottom: 2.5rem;">
+      <div class="section-label">Agenda tu cita</div>
+      <h2 class="section-title">Empieza hoy</h2>
+      <p class="section-sub" style="margin: 0 auto;">Sin lista de espera. Elige el centro más cercano y coordina tu cita en minutos.</p>
+    </div>
+    <div class="booking-card">
+
+      <!-- FORM -->
+      <div id="booking-form">
+        <h2>Reserva tu análisis de bienestar</h2>
+        <p class="sub">Completa el formulario y te conectamos con el centro de tu zona.</p>
+
+        <div class="form-group">
+          <label for="provincia">Provincia / Zona</label>
+          <select id="provincia" onchange="actualizarCentros()">
+            <option value="">Selecciona tu provincia...</option>
+            <option value="dn">Distrito Nacional</option>
+            <option value="santiago">Santiago</option>
+            <option value="sdeste">Santo Domingo Este</option>
+            <option value="sdoeste">Santo Domingo Oeste</option>
+            <option value="sdnorte">Santo Domingo Norte</option>
+            <option value="lapvega">La Vega</option>
+            <option value="sanpedro">San Pedro de Macorís</option>
+            <option value="otra">Otra provincia</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="centro">Centro de análisis</label>
+          <select id="centro" disabled>
+            <option value="">Primero selecciona tu provincia</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fecha">Fecha preferida</label>
+            <input type="date" id="fecha" min=""/>
+          </div>
+          <div class="form-group">
+            <label for="hora">Horario preferido</label>
+            <select id="hora" disabled>
+              <option value="">Selecciona un centro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" placeholder="María Rodríguez"/>
+          </div>
+          <div class="form-group">
+            <label for="edad">Edad</label>
+            <input type="number" id="edad" placeholder="35" min="15" max="99"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="telefono">WhatsApp / Teléfono</label>
+          <input type="tel" id="telefono" placeholder="809-555-0000"/>
+        </div>
+
+        <div class="form-disclaimer">
+          <span>⚠️</span>
+          <span>Este chequeo no sustituye un diagnóstico médico. Es solo una referencia de salud y bienestar general.</span>
+        </div>
+
+        <button class="btn-book" id="btn-reservar" onclick="procesarReserva()">
+          Reservar mi cita →
+        </button>
+      </div>
+
+      <!-- CONFIRMATION -->
+      <div id="confirmation" class="confirmation-panel">
+        <div style="font-size: 3rem; margin-bottom: 0.5rem;">✅</div>
+        <h2 style="font-size: 1.4rem; color: var(--gray-900); margin-bottom: 0.5rem;">¡Reserva registrada!</h2>
+        <p style="font-size: 0.9rem; color: var(--gray-500);">Tu código de referencia es:</p>
+        <div class="conf-code" id="codigo-display">AV-0000</div>
+        <p class="conf-desc" id="conf-resumen"></p>
+
+        <a id="whatsapp-link" href="#" target="_blank" class="btn-whatsapp">
+          <span class="whatsapp-icon">💬</span>
+          Confirmar por WhatsApp
+        </a>
+
+        <div class="conf-note">
+          Al tocar el botón se abrirá WhatsApp con el mensaje pre-llenado listo para enviar.
+        </div>
+
+        <div class="conf-email-note" id="conf-email-note">
+          📧 También te enviamos un correo de confirmación con todos los detalles de tu cita.
+        </div>
+
+        <div>
+          <button class="btn-reset" onclick="reiniciarFormulario()">← Hacer otra reserva</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section testimonials-section" id="testimonios">
+  <div class="section-inner">
+    <div class="section-label">Testimonios</div>
+    <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+    <p class="section-sub">Personas reales que tomaron control de su bienestar con Aura Vital.</p>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"No sabía que tenía tan baja la absorción de vitamina D hasta que hice el análisis. El plan que me dieron fue muy claro y en 30 días me sentí con más energía."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">MR</div>
+          <div>
+            <div class="author-name">María Rodríguez</div>
+            <div class="author-location">Santo Domingo Este</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Me impresionó la rapidez. Cinco minutos y ya tenía un reporte completo. El sistema 'Efecto Dominó' me ayudó a entender por qué me sentía tan cansado."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">JP</div>
+          <div>
+            <div class="author-name">Juan Pérez</div>
+            <div class="author-location">Santiago</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Una experiencia muy profesional. Vine con mi esposo y los dos recibimos planes diferentes según nuestras necesidades. 100% recomendado."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">CL</div>
+          <div>
+            <div class="author-name">Carmen López</div>
+            <div class="author-location">Distrito Nacional</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Aura Vital</div>
+  <div class="footer-legal">
+    Este servicio no sustituye el diagnóstico médico profesional. El análisis de bienestar cuántico es una evaluación orientativa de referencia para apoyar hábitos saludables. Para diagnósticos médicos, consulta siempre a un profesional de la salud certificado.
+  </div>
+  <div class="footer-bottom">
+    © 2024 Aura Vital. República Dominicana. Todos los derechos reservados.
+  </div>
+</footer>
+
+<script>
+  /* ── DATA ── */
+  const CENTROS = {
+    dn: [
+      { nombre: "Centro Aura Vital — Naco", whatsapp: "18095550001", horarios: ["9:00 AM","10:00 AM","11:00 AM","2:00 PM","3:00 PM","4:00 PM"] },
+      { nombre: "Centro Aura Vital — Piantini", whatsapp: "18095550002", horarios: ["9:00 AM","10:00 AM","11:00 AM","2:00 PM","3:00 PM"] }
+    ],
+    santiago: [
+      { nombre: "Centro Aura Vital — Santiago Centro", whatsapp: "18095550003", horarios: ["9:00 AM","10:00 AM","11:00 AM","2:00 PM","4:00 PM"] }
+    ],
+    sdeste: [
+      { nombre: "Centro Aura Vital — Villa Mella Este", whatsapp: "18095550004", horarios: ["9:00 AM","10:00 AM","11:00 AM","1:00 PM","3:00 PM"] }
+    ],
+    sdoeste: [
+      { nombre: "Centro Aura Vital — Los Alcarrizos", whatsapp: "18095550005", horarios: ["9:00 AM","10:00 AM","2:00 PM","3:00 PM"] }
+    ],
+    sdnorte: [
+      { nombre: "Centro Aura Vital — Villa Mella Norte", whatsapp: "18095550006", horarios: ["9:00 AM","11:00 AM","2:00 PM","4:00 PM"] }
+    ],
+    lapvega: [
+      { nombre: "Centro Aura Vital — La Vega", whatsapp: "18095550007", horarios: ["9:00 AM","10:00 AM","11:00 AM","2:00 PM"] }
+    ],
+    sanpedro: [
+      { nombre: "Centro Aura Vital — San Pedro", whatsapp: "18095550008", horarios: ["9:00 AM","10:00 AM","2:00 PM","3:00 PM"] }
+    ],
+    otra: [
+      { nombre: "Centro Aura Vital — Próximamente en tu zona", whatsapp: "18095550000", horarios: ["Consultar disponibilidad"] }
+    ]
+  };
+
+  /* ── MIN DATE ── */
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDate = tomorrow.toISOString().split("T")[0];
+  document.getElementById("fecha").min = minDate;
+
+  /* ── PROVINCE → CENTER ── */
+  function actualizarCentros() {
+    const prov = document.getElementById("provincia").value;
+    const selCentro = document.getElementById("centro");
+    const selHora = document.getElementById("hora");
+
+    selCentro.innerHTML = '<option value="">Selecciona un centro...</option>';
+    selHora.innerHTML = '<option value="">Selecciona un centro primero</option>';
+    selHora.disabled = true;
+
+    if (!prov) { selCentro.disabled = true; return; }
+    selCentro.disabled = false;
+
+    const lista = CENTROS[prov] || [];
+    lista.forEach((c, i) => {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = c.nombre;
+      selCentro.appendChild(opt);
+    });
+
+    selCentro.onchange = function() {
+      const idx = this.value;
+      selHora.innerHTML = '<option value="">Elige un horario...</option>';
+      if (idx === "") { selHora.disabled = true; return; }
+      selHora.disabled = false;
+      lista[idx].horarios.forEach(h => {
+        const opt = document.createElement("option");
+        opt.value = h; opt.textContent = h;
+        selHora.appendChild(opt);
+      });
+    };
+  }
+
+  /* ── GENERATE CODE ── */
+  function generarCodigo() {
+    const num = Math.floor(10000 + Math.random() * 90000);
+    const year = new Date().getFullYear();
+    return `AV-${year}-${num}`;
+  }
+
+  /* ── FORMAT DATE ── */
+  function formatFecha(dateStr) {
+    if (!dateStr) return "fecha por confirmar";
+    const d = new Date(dateStr + "T12:00:00");
+    return d.toLocaleDateString("es-DO", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  }
+
+  /* ── BOOKING ── */
+  function procesarReserva() {
+    const nombre   = document.getElementById("nombre").value.trim();
+    const telefono = document.getElementById("telefono").value.trim();
+    const edad     = document.getElementById("edad").value.trim();
+    const prov     = document.getElementById("provincia").value;
+    const centroIdx = document.getElementById("centro").value;
+    const fecha    = document.getElementById("fecha").value;
+    const hora     = document.getElementById("hora").value;
+
+    if (!nombre || !telefono || !prov || centroIdx === "" || !fecha || !hora || !edad) {
+      alert("Por favor completa todos los campos para continuar.");
+      return;
+    }
+
+    const centrosZona = CENTROS[prov];
+    const centroData  = centrosZona[parseInt(centroIdx)];
+    const codigo      = generarCodigo();
+    const fechaFmt    = formatFecha(fecha);
+    const localidad   = centroData.nombre.replace("Centro Aura Vital — ","");
+
+    /* WhatsApp pre-filled message */
+    const mensaje = `Hola Aura Vital, mi código de cita es ${codigo}. Quiero confirmar mi asistencia para el día ${fechaFmt} a las ${hora} en el centro de ${localidad}. Mi nombre es ${nombre}.`;
+    const waUrl   = `https://wa.me/${centroData.whatsapp}?text=${encodeURIComponent(mensaje)}`;
+
+    document.getElementById("codigo-display").textContent = codigo;
+    document.getElementById("conf-resumen").innerHTML =
+      `<strong>${centroData.nombre}</strong><br>${fechaFmt} · ${hora}`;
+    document.getElementById("whatsapp-link").href = waUrl;
+
+    document.getElementById("booking-form").style.display = "none";
+    const conf = document.getElementById("confirmation");
+    conf.classList.add("show");
+    conf.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function reiniciarFormulario() {
+    document.getElementById("booking-form").style.display = "block";
+    document.getElementById("confirmation").classList.remove("show");
+    document.getElementById("provincia").value = "";
+    document.getElementById("centro").innerHTML = '<option value="">Primero selecciona tu provincia</option>';
+    document.getElementById("centro").disabled = true;
+    document.getElementById("hora").innerHTML = '<option value="">Selecciona un centro</option>';
+    document.getElementById("hora").disabled = true;
+    document.getElementById("fecha").value = "";
+    document.getElementById("nombre").value = "";
+    document.getElementById("telefono").value = "";
+    document.getElementById("edad").value = "";
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aura Vital — Panel Administrador</title>
+<style>
+  :root {
+    --teal-900: #04342C;
+    --teal-800: #085041;
+    --teal-700: #0a5c4a;
+    --teal-600: #0F6E56;
+    --teal-400: #1D9E75;
+    --teal-200: #5DCAA5;
+    --teal-100: #9FE1CB;
+    --teal-50:  #E1F5EE;
+    --blue-800: #0C447C;
+    --blue-600: #185FA5;
+    --blue-400: #378ADD;
+    --blue-100: #B5D4F4;
+    --blue-50:  #E6F1FB;
+    --amber-800: #633806;
+    --amber-600: #854F0B;
+    --amber-400: #BA7517;
+    --amber-100: #FAC775;
+    --amber-50:  #FAEEDA;
+    --green-600: #3B6D11;
+    --green-50:  #EAF3DE;
+    --coral-600: #993C1D;
+    --coral-50:  #FAECE7;
+    --purple-600: #534AB7;
+    --purple-50:  #EEEDFE;
+    --gray-900: #1a1a1a;
+    --gray-700: #3d3d3a;
+    --gray-500: #6b6b68;
+    --gray-300: #c4c2bb;
+    --gray-200: #e8e6df;
+    --gray-100: #f2f0ea;
+    --gray-50:  #f7f6f2;
+    --white: #ffffff;
+    --sidebar-w: 248px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--gray-900);
+    background: var(--gray-50);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── LAYOUT ── */
+  .app { display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--teal-900);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 50;
+  }
+  .sidebar-logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 1.25rem 1.25rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .logo-dot {
+    width: 30px; height: 30px;
+    background: var(--teal-400); border-radius: 50%;
+    display: grid; place-items: center; flex-shrink: 0;
+  }
+  .logo-dot::after {
+    content: ''; width: 12px; height: 12px;
+    border-radius: 50%; background: var(--white); opacity: 0.85;
+  }
+  .logo-text { font-size: 1rem; font-weight: 700; color: var(--white); }
+  .logo-role { font-size: 0.68rem; color: var(--teal-100); opacity: 0.5; }
+
+  .sidebar-nav { flex: 1; padding: 1rem 0.75rem; display: flex; flex-direction: column; gap: 2px; }
+  .nav-section-label {
+    font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: rgba(255,255,255,0.25);
+    padding: 0.75rem 0.75rem 0.25rem;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0.6rem 0.75rem; border-radius: 8px;
+    font-size: 0.875rem; color: rgba(255,255,255,0.55);
+    cursor: pointer; transition: all 0.15s;
+    border: none; background: none; width: 100%;
+    text-align: left; font-family: inherit;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+  .nav-item.active { background: rgba(29,158,117,0.2); color: var(--teal-200); }
+  .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+  .nav-sep { height: 1px; background: rgba(255,255,255,0.07); margin: 0.5rem 0; }
+  .nav-badge {
+    margin-left: auto; background: var(--coral-600);
+    color: var(--white); border-radius: 100px;
+    padding: 1px 7px; font-size: 0.68rem; font-weight: 700;
+  }
+
+  .sidebar-user {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .user-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--teal-700); display: grid; place-items: center;
+    font-size: 0.78rem; font-weight: 700; color: var(--teal-100); flex-shrink: 0;
+  }
+  .user-name { font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.8); }
+  .user-role { font-size: 0.7rem; color: rgba(255,255,255,0.35); }
+
+  /* ── MAIN ── */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    height: 56px; background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 1.75rem; position: sticky; top: 0; z-index: 40;
+  }
+  .topbar-title { font-size: 0.95rem; font-weight: 600; color: var(--gray-900); }
+  .topbar-date { font-size: 0.78rem; color: var(--gray-500); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .topbar-badge {
+    padding: 4px 12px; border-radius: 100px;
+    font-size: 0.75rem; font-weight: 600;
+  }
+  .badge-warn { background: var(--amber-50); color: var(--amber-600); border: 1px solid var(--amber-100); }
+  .badge-ok   { background: var(--green-50); color: var(--green-600); border: 1px solid #C0DD97; }
+
+  /* ── CONTENT ── */
+  .content { padding: 1.75rem; display: flex; flex-direction: column; gap: 1.5rem; }
+  .panel { display: none; flex-direction: column; gap: 1.5rem; }
+  .panel.active { display: flex; }
+
+  /* ── STAT CARDS ── */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .stats-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .stat-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: 12px; padding: 1.1rem 1.25rem;
+  }
+  .stat-label { font-size: 0.75rem; color: var(--gray-500); margin-bottom: 0.4rem; }
+  .stat-val { font-size: 1.7rem; font-weight: 700; color: var(--gray-900); line-height: 1; }
+  .stat-sub { font-size: 0.75rem; color: var(--gray-500); margin-top: 4px; }
+  .stat-trend-up   { color: var(--green-600); }
+  .stat-trend-down { color: var(--coral-600); }
+  .stat-card.teal   { background: var(--teal-50); border-color: var(--teal-100); }
+  .stat-card.teal .stat-val { color: var(--teal-600); }
+  .stat-card.amber  { background: var(--amber-50); border-color: var(--amber-100); }
+  .stat-card.amber .stat-val { color: var(--amber-600); }
+  .stat-card.blue   { background: var(--blue-50); border-color: var(--blue-100); }
+  .stat-card.blue .stat-val { color: var(--blue-600); }
+  .stat-card.purple { background: var(--purple-50); border-color: #CECBF6; }
+  .stat-card.purple .stat-val { color: var(--purple-600); }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: 14px; overflow: hidden;
+  }
+  .card-header {
+    padding: 1rem 1.25rem; border-bottom: 1px solid var(--gray-100);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-title { font-size: 0.9rem; font-weight: 600; color: var(--gray-900); }
+  .card-body { padding: 1.25rem; }
+
+  /* ── GRID 2 col ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    background: var(--teal-600); color: var(--white); border: none;
+    border-radius: 10px; padding: 0.65rem 1.25rem; font-size: 0.875rem;
+    font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: background 0.15s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary:hover { background: var(--teal-800); }
+  .btn-secondary {
+    background: var(--white); color: var(--gray-700);
+    border: 1px solid var(--gray-200); border-radius: 10px;
+    padding: 0.6rem 1.1rem; font-size: 0.875rem; font-weight: 500;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-secondary:hover { border-color: var(--gray-300); background: var(--gray-50); }
+  .btn-danger {
+    background: var(--coral-50); color: var(--coral-600);
+    border: 1px solid #F0997B; border-radius: 8px;
+    padding: 0.4rem 0.85rem; font-size: 0.78rem; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .btn-danger:hover { background: #F5C4B3; }
+  .btn-sm {
+    padding: 0.35rem 0.75rem; font-size: 0.75rem; border-radius: 7px;
+  }
+  .btn-whatsapp {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #25D366; color: var(--white); border: none;
+    border-radius: 8px; padding: 0.4rem 0.85rem;
+    font-size: 0.78rem; font-weight: 600;
+    cursor: pointer; font-family: inherit; text-decoration: none;
+    transition: background 0.15s;
+  }
+  .btn-whatsapp:hover { background: #1da851; }
+
+  /* ── STATUS PILLS ── */
+  .pill {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 0.7rem; font-weight: 600; white-space: nowrap;
+  }
+  .pill-active   { background: var(--green-50); color: var(--green-600); }
+  .pill-paused   { background: var(--amber-50); color: var(--amber-600); }
+  .pill-pending  { background: var(--blue-50);  color: var(--blue-600); }
+  .pill-paid     { background: var(--green-50); color: var(--green-600); }
+  .pill-unpaid   { background: var(--coral-50); color: var(--coral-600); }
+
+  /* ── TABLE ── */
+  .tbl { width: 100%; border-collapse: collapse; }
+  .tbl th {
+    text-align: left; font-size: 0.72rem; font-weight: 600;
+    color: var(--gray-500); padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--gray-200); background: var(--gray-50);
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .tbl td {
+    padding: 0.8rem 1rem; font-size: 0.875rem;
+    border-bottom: 1px solid var(--gray-100); color: var(--gray-700);
+    vertical-align: middle;
+  }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl tr:hover td { background: var(--gray-50); }
+  .tbl-code { font-family: monospace; color: var(--teal-600); font-size: 0.8rem; }
+  .tbl-amount { font-weight: 600; color: var(--gray-900); }
+  .tbl-total td { font-weight: 700; border-top: 2px solid var(--gray-200); color: var(--gray-900); }
+
+  /* ── CENTRO CARD ── */
+  .centros-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 1rem; }
+  .centro-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: 14px; overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .centro-card:hover { border-color: var(--teal-200); }
+  .centro-card-header {
+    padding: 1rem 1.25rem;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .centro-num {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--teal-50); display: grid; place-items: center;
+    font-size: 0.78rem; font-weight: 700; color: var(--teal-600);
+    flex-shrink: 0; margin-bottom: 8px;
+  }
+  .centro-name { font-size: 0.9rem; font-weight: 600; color: var(--gray-900); margin-bottom: 3px; }
+  .centro-prov { font-size: 0.78rem; color: var(--gray-500); }
+  .centro-body { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 8px; }
+  .centro-row { display: flex; align-items: center; justify-content: space-between; }
+  .centro-row-label { font-size: 0.78rem; color: var(--gray-500); }
+  .centro-row-val { font-size: 0.82rem; font-weight: 500; color: var(--gray-900); }
+  .centro-actions { padding: 0.75rem 1.25rem; border-top: 1px solid var(--gray-100); display: flex; gap: 8px; }
+
+  /* ── JORNADA CARD ── */
+  .jornada-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: 14px; overflow: hidden;
+  }
+  .jornada-header {
+    padding: 1.25rem;
+    background: linear-gradient(135deg, var(--teal-900) 0%, #063d2e 100%);
+    color: var(--white);
+  }
+  .jornada-title { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .jornada-date { font-size: 0.78rem; color: var(--teal-100); opacity: 0.65; }
+  .jornada-city { font-size: 0.8rem; color: var(--teal-200); font-weight: 500; margin-top: 6px; }
+  .jornada-body { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 10px; }
+  .jornada-stat { display: flex; align-items: center; justify-content: space-between; }
+  .jornada-stat-label { font-size: 0.8rem; color: var(--gray-500); }
+  .jornada-stat-val { font-size: 0.9rem; font-weight: 600; color: var(--gray-900); }
+  .jornada-progress { height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+  .jornada-progress-fill { height: 100%; background: var(--teal-400); border-radius: 3px; transition: width 0.5s; }
+  .jornada-footer { padding: 0.75rem 1.25rem; border-top: 1px solid var(--gray-100); display: flex; gap: 8px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 200;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white); border-radius: 16px;
+    padding: 2rem; width: 100%; max-width: 520px;
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal-title { font-size: 1.1rem; font-weight: 700; color: var(--gray-900); margin-bottom: 1.5rem; }
+  .modal-form-group { margin-bottom: 1.1rem; }
+  .modal-label {
+    display: block; font-size: 0.8rem; font-weight: 600;
+    color: var(--gray-700); margin-bottom: 0.4rem;
+  }
+  .modal-input, .modal-select {
+    width: 100%; border: 1.5px solid var(--gray-200);
+    border-radius: 9px; padding: 0.65rem 0.9rem;
+    font-size: 0.9rem; color: var(--gray-900); font-family: inherit;
+    background: var(--white); transition: border-color 0.15s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .modal-input:focus, .modal-select:focus {
+    outline: none; border-color: var(--teal-400);
+    box-shadow: 0 0 0 3px rgba(29,158,117,0.1);
+  }
+  .modal-actions { display: flex; gap: 10px; margin-top: 1.5rem; }
+
+  /* ── METRICAS CHART BARS ── */
+  .chart-bars {
+    display: flex; align-items: flex-end; gap: 8px;
+    height: 120px; padding: 0 0 0.5rem;
+  }
+  .bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+  .bar {
+    width: 100%; border-radius: 4px 4px 0 0;
+    background: var(--teal-400); transition: height 0.4s ease;
+    min-height: 4px;
+  }
+  .bar:hover { background: var(--teal-600); }
+  .bar-label { font-size: 0.65rem; color: var(--gray-500); text-align: center; }
+  .bar-val { font-size: 0.68rem; font-weight: 600; color: var(--teal-600); }
+
+  /* ── 30d ALERTS ── */
+  .alert-item {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .alert-item:last-child { border-bottom: none; }
+  .alert-ava {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--teal-50); display: grid; place-items: center;
+    font-size: 0.72rem; font-weight: 700; color: var(--teal-600); flex-shrink: 0;
+  }
+  .alert-days {
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 0.7rem; font-weight: 700; white-space: nowrap;
+  }
+  .days-due    { background: var(--amber-50); color: var(--amber-600); border: 1px solid var(--amber-100); }
+  .days-overdue { background: var(--coral-50); color: var(--coral-600); border: 1px solid #F0997B; }
+
+  @media (max-width: 900px) {
+    .sidebar { width: 0; overflow: hidden; }
+    .main { margin-left: 0; }
+    .stats-row, .stats-row-3 { grid-template-columns: repeat(2,1fr); }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-dot"></div>
+      <div>
+        <div class="logo-text">Aura Vital</div>
+        <div class="logo-role">Panel Administrador</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Visión general</div>
+      <button class="nav-item active" onclick="showPanel('dashboard', this)">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+      <div class="nav-sep"></div>
+      <div class="nav-section-label">Red de centros</div>
+      <button class="nav-item" onclick="showPanel('centros', this)">
+        <span class="nav-icon">📍</span> Centros activos
+      </button>
+      <button class="nav-item" onclick="showPanel('jornadas', this)">
+        <span class="nav-icon">🗺</span> Jornadas nacionales
+      </button>
+      <div class="nav-sep"></div>
+      <div class="nav-section-label">Finanzas</div>
+      <button class="nav-item" onclick="showPanel('comisiones', this)">
+        <span class="nav-icon">💰</span> Comisiones
+        <span class="nav-badge" id="badge-pendientes">3</span>
+      </button>
+      <div class="nav-sep"></div>
+      <div class="nav-section-label">Clientes</div>
+      <button class="nav-item" onclick="showPanel('alertas30', this)">
+        <span class="nav-icon">🔔</span> Alertas 30 días
+        <span class="nav-badge">8</span>
+      </button>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar">AD</div>
+      <div>
+        <div class="user-name">Administrador</div>
+        <div class="user-role">Dueño del proyecto</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+        <div class="topbar-date" id="topbar-date"></div>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-badge badge-warn">⚠ 3 liquidaciones pendientes</span>
+        <span class="topbar-badge badge-ok">10 centros activos</span>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ════════════════════════════════
+           PANEL: DASHBOARD
+      ════════════════════════════════ -->
+      <div class="panel active" id="panel-dashboard">
+
+        <!-- Stats principales -->
+        <div class="stats-row">
+          <div class="stat-card teal">
+            <div class="stat-label">Citas totales (este mes)</div>
+            <div class="stat-val">347</div>
+            <div class="stat-sub stat-trend-up">↑ 18% vs mes anterior</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-label">Ingresos del mes</div>
+            <div class="stat-val">RD$104,100</div>
+            <div class="stat-sub">347 citas × RD$300</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-label">Centros activos</div>
+            <div class="stat-val">10</div>
+            <div class="stat-sub">En toda República Dominicana</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-label">Alertas de reescaneo</div>
+            <div class="stat-val">8</div>
+            <div class="stat-sub">Clientes en ventana 30 días</div>
+          </div>
+        </div>
+
+        <!-- Gráfico mensual + top centros -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Citas por semana (junio)</div>
+            </div>
+            <div class="card-body">
+              <div class="chart-bars" id="chart-bars"></div>
+              <div style="font-size:0.75rem; color:var(--gray-500); margin-top:0.5rem;">
+                Total junio: <strong style="color:var(--gray-900)">347 citas</strong> · Proyección mes: <strong style="color:var(--teal-600)">~410</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Top centros del mes</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:0;">
+              <div id="top-centros-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Últimas liquidaciones pendientes -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Liquidaciones pendientes de confirmación</div>
+            <button class="btn-secondary btn-sm" onclick="showPanel('comisiones', document.querySelector('.nav-item:nth-child(8)'))">Ver todas →</button>
+          </div>
+          <table class="tbl" id="tbl-pendientes-dash"></table>
+        </div>
+
+      </div>
+
+      <!-- ════════════════════════════════
+           PANEL: CENTROS
+      ════════════════════════════════ -->
+      <div class="panel" id="panel-centros">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div style="font-size:1rem; font-weight:600; color:var(--gray-900);">Red de centros</div>
+            <div style="font-size:0.8rem; color:var(--gray-500); margin-top:2px;">10 centros activos en República Dominicana</div>
+          </div>
+          <button class="btn-primary" onclick="abrirModalCentro()">+ Agregar centro</button>
+        </div>
+
+        <div class="centros-grid" id="centros-grid"></div>
+      </div>
+
+      <!-- ════════════════════════════════
+           PANEL: JORNADAS NACIONALES
+      ════════════════════════════════ -->
+      <div class="panel" id="panel-jornadas">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div style="font-size:1rem; font-weight:600; color:var(--gray-900);">Jornadas nacionales itinerantes</div>
+            <div style="font-size:0.8rem; color:var(--gray-500); margin-top:2px;">Eventos en distintas ciudades con lista previa de interesados</div>
+          </div>
+          <button class="btn-primary" onclick="abrirModalJornada()">+ Nueva jornada</button>
+        </div>
+
+        <div class="stats-row-3">
+          <div class="stat-card teal">
+            <div class="stat-label">Jornadas este año</div>
+            <div class="stat-val">6</div>
+            <div class="stat-sub">3 completadas · 3 planificadas</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-label">Total asistentes</div>
+            <div class="stat-val">284</div>
+            <div class="stat-sub">Promedio 47 por jornada</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-label">Próxima ciudad</div>
+            <div class="stat-val" style="font-size:1.2rem;">La Vega</div>
+            <div class="stat-sub">15 de julio · 62 interesados</div>
+          </div>
+        </div>
+
+        <div class="grid-3" id="jornadas-grid"></div>
+      </div>
+
+      <!-- ════════════════════════════════
+           PANEL: COMISIONES
+      ════════════════════════════════ -->
+      <div class="panel" id="panel-comisiones">
+        <div class="stats-row">
+          <div class="stat-card teal">
+            <div class="stat-label">Cobrado este mes</div>
+            <div class="stat-val">RD$89,700</div>
+            <div class="stat-sub">299 citas confirmadas</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-label">Pendiente de cobro</div>
+            <div class="stat-val">RD$14,400</div>
+            <div class="stat-sub">48 citas sin liquidar</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-label">Centros al día</div>
+            <div class="stat-val">7 / 10</div>
+            <div class="stat-sub">3 con saldo pendiente</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-label">Comisión por cita</div>
+            <div class="stat-val">RD$300</div>
+            <div class="stat-sub">Tarifa estándar vigente</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Estado de liquidaciones por centro</div>
+            <span style="font-size:0.78rem; color:var(--gray-500)">Junio 2024</span>
+          </div>
+          <table class="tbl" id="tbl-comisiones"></table>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+           PANEL: ALERTAS 30 DÍAS
+      ════════════════════════════════ -->
+      <div class="panel" id="panel-alertas30">
+        <div>
+          <div style="font-size:1rem; font-weight:600; color:var(--gray-900);">Clientes para reevaluación</div>
+          <div style="font-size:0.8rem; color:var(--gray-500); margin-top:2px;">
+            Clientes de toda la red que cumplen 30 días desde su último escáner
+          </div>
+        </div>
+
+        <div class="stats-row-3">
+          <div class="stat-card amber">
+            <div class="stat-label">En ventana (30-35 días)</div>
+            <div class="stat-val">5</div>
+            <div class="stat-sub">Recordatorio recomendado</div>
+          </div>
+          <div class="stat-card" style="background:var(--coral-50); border-color:#F0997B;">
+            <div class="stat-label">Vencidos (+35 días)</div>
+            <div class="stat-val" style="color:var(--coral-600);">3</div>
+            <div class="stat-sub" style="color:var(--coral-600);">Recordatorio urgente</div>
+          </div>
+          <div class="stat-card teal">
+            <div class="stat-label">Reevaluados este mes</div>
+            <div class="stat-val">41</div>
+            <div class="stat-sub">Tasa de retorno: 68%</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Lista de alertas activas</div>
+            <button class="btn-primary btn-sm" onclick="recordarTodos()">💬 Recordar a todos</button>
+          </div>
+          <div id="alertas30-list"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: NUEVO CENTRO ── -->
+<div class="modal-overlay" id="modal-centro">
+  <div class="modal">
+    <div class="modal-title" id="modal-centro-title">Agregar nuevo centro</div>
+    <div class="modal-form-group">
+      <label class="modal-label">Nombre del centro</label>
+      <input class="modal-input" id="mc-nombre" placeholder="Ej: Centro Aura Vital — Moca"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Provincia / Zona</label>
+      <select class="modal-select" id="mc-prov">
+        <option value="">Selecciona...</option>
+        <option>Distrito Nacional</option><option>Santiago</option>
+        <option>Santo Domingo Este</option><option>Santo Domingo Oeste</option>
+        <option>Santo Domingo Norte</option><option>La Vega</option>
+        <option>San Pedro de Macorís</option><option>Puerto Plata</option>
+        <option>San Francisco de Macorís</option><option>Moca</option>
+        <option>Bonao</option><option>Barahona</option><option>Otra</option>
+      </select>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Dirección</label>
+      <input class="modal-input" id="mc-dir" placeholder="Calle, número, sector"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Nombre del operador responsable</label>
+      <input class="modal-input" id="mc-operador" placeholder="Nombre completo"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">WhatsApp del operador</label>
+      <input class="modal-input" id="mc-wa" placeholder="18095550000" type="tel"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Email del operador</label>
+      <input class="modal-input" id="mc-email" placeholder="operador@email.com" type="email"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Horarios disponibles</label>
+      <input class="modal-input" id="mc-horarios" placeholder="Ej: Lun-Vie 9am-5pm, Sáb 9am-1pm"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="guardarCentro()">Guardar centro</button>
+      <button class="btn-secondary" onclick="cerrarModal('modal-centro')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: NUEVA JORNADA ── -->
+<div class="modal-overlay" id="modal-jornada">
+  <div class="modal">
+    <div class="modal-title">Crear jornada nacional</div>
+    <div class="modal-form-group">
+      <label class="modal-label">Nombre del evento</label>
+      <input class="modal-input" id="mj-nombre" placeholder="Jornada de Bienestar — Santiago"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Ciudad / Provincia</label>
+      <input class="modal-input" id="mj-ciudad" placeholder="La Vega"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Fecha del evento</label>
+      <input class="modal-input" id="mj-fecha" type="date"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Capacidad máxima de personas</label>
+      <input class="modal-input" id="mj-cap" type="number" placeholder="80" min="10" max="500"/>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Centro organizador responsable</label>
+      <select class="modal-select" id="mj-centro">
+        <option value="">Selecciona un centro...</option>
+      </select>
+    </div>
+    <div class="modal-form-group">
+      <label class="modal-label">Dirección del lugar (puede definirse después)</label>
+      <input class="modal-input" id="mj-lugar" placeholder="Por confirmar según lista de interesados"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="guardarJornada()">Crear jornada</button>
+      <button class="btn-secondary" onclick="cerrarModal('modal-jornada')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   DATA
+══════════════════════════════════════ */
+const CENTROS_DATA = [
+  { id:1, nombre:"Naco",              prov:"Distrito Nacional",    operador:"Roberto Alcántara", wa:"18095550001", citas_mes:52, comision_pend:0,     status:"active" },
+  { id:2, nombre:"Piantini",          prov:"Distrito Nacional",    operador:"Karla Méndez",      wa:"18095550002", citas_mes:48, comision_pend:0,     status:"active" },
+  { id:3, nombre:"Santiago Centro",   prov:"Santiago",             operador:"Hector Núñez",      wa:"18095550003", citas_mes:44, comision_pend:4800,  status:"active" },
+  { id:4, nombre:"Villa Mella Este",  prov:"Santo Domingo Este",   operador:"Ana Pérez",         wa:"18095550004", citas_mes:38, comision_pend:0,     status:"active" },
+  { id:5, nombre:"Los Alcarrizos",    prov:"Santo Domingo Oeste",  operador:"Luis Tavarez",      wa:"18095550005", citas_mes:35, comision_pend:3300,  status:"active" },
+  { id:6, nombre:"Villa Mella Norte", prov:"Santo Domingo Norte",  operador:"Carmen Vásquez",    wa:"18095550006", citas_mes:32, comision_pend:0,     status:"active" },
+  { id:7, nombre:"La Vega",           prov:"La Vega",              operador:"Pablo Rivas",       wa:"18095550007", citas_mes:29, comision_pend:6300,  status:"active" },
+  { id:8, nombre:"San Pedro",         prov:"San Pedro de Macorís", operador:"María Santos",      wa:"18095550008", citas_mes:27, comision_pend:0,     status:"active" },
+  { id:9, nombre:"Puerto Plata",      prov:"Puerto Plata",         operador:"Jorge Pimentel",    wa:"18095550009", citas_mes:24, comision_pend:0,     status:"active" },
+  { id:10,nombre:"San Francisco",     prov:"San Francisco de Macorís", operador:"Diana Castro", wa:"18095550010", citas_mes:18, comision_pend:0,     status:"active" },
+];
+
+const SEMANAS = [
+  { label:"S1", citas:72  },
+  { label:"S2", citas:88  },
+  { label:"S3", citas:95  },
+  { label:"S4 (en curso)", citas:92 },
+];
+
+const JORNADAS_DATA = [
+  { nombre:"Jornada Santiago",     ciudad:"Santiago",    fecha:"2024-03-15", cap:80, asistentes:74, status:"done"    },
+  { nombre:"Jornada La Romana",    ciudad:"La Romana",   fecha:"2024-04-20", cap:60, asistentes:58, status:"done"    },
+  { nombre:"Jornada Barahona",     ciudad:"Barahona",    fecha:"2024-05-18", cap:70, asistentes:67, status:"done"    },
+  { nombre:"Jornada La Vega",      ciudad:"La Vega",     fecha:"2024-07-15", cap:90, interesados:62, status:"planned" },
+  { nombre:"Jornada Moca",         ciudad:"Moca",        fecha:"2024-08-10", cap:60, interesados:28, status:"planned" },
+  { nombre:"Jornada Bonao",        ciudad:"Bonao",       fecha:"2024-09-06", cap:50, interesados:14, status:"planned" },
+];
+
+const ALERTAS_DATA = [
+  { nombre:"Rosa Montero",    centro:"Naco",            codigo:"AV-2024-38201", dias:38, tel:"8095550101" },
+  { nombre:"Pedro Alcántara", centro:"Piantini",        codigo:"AV-2024-39101", dias:36, tel:"8095550102" },
+  { nombre:"Lucía Fernández", centro:"Santiago Centro", codigo:"AV-2024-40201", dias:35, tel:"8095550103" },
+  { nombre:"Carlos Jiménez",  centro:"Villa Mella Norte",codigo:"AV-2024-41100",dias:33, tel:"8095550104" },
+  { nombre:"Ana De Los Santos",centro:"La Vega",        codigo:"AV-2024-42300", dias:32, tel:"8095550105" },
+  { nombre:"Marcos Batista",  centro:"San Pedro",       codigo:"AV-2024-43100", dias:31, tel:"8095550106" },
+  { nombre:"Diana Castro",    centro:"Los Alcarrizos",  codigo:"AV-2024-44200", dias:30, tel:"8095550107" },
+  { nombre:"Jorge Pimentel",  centro:"Puerto Plata",    codigo:"AV-2024-45100", dias:30, tel:"8095550108" },
+];
+
+/* ══════════════════════════════════════
+   UTILS
+══════════════════════════════════════ */
+function initials(n){ return n.split(" ").slice(0,2).map(w=>w[0]).join("").toUpperCase(); }
+function fmt(n){ return new Intl.NumberFormat("es-DO").format(n); }
+function fmtDate(d){
+  return new Date(d+"T12:00:00").toLocaleDateString("es-DO",{day:"numeric",month:"short",year:"numeric"});
+}
+
+document.getElementById("topbar-date").textContent =
+  new Date().toLocaleDateString("es-DO",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+
+/* ══════════════════════════════════════
+   PANEL SWITCHER
+══════════════════════════════════════ */
+function showPanel(name, el) {
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(b=>b.classList.remove("active"));
+  document.getElementById("panel-"+name).classList.add("active");
+  if(el) el.classList.add("active");
+  const titles = {
+    dashboard:"Dashboard", centros:"Red de centros",
+    jornadas:"Jornadas nacionales", comisiones:"Control de comisiones",
+    alertas30:"Alertas 30 días"
+  };
+  document.getElementById("topbar-title").textContent = titles[name]||name;
+}
+
+/* ══════════════════════════════════════
+   DASHBOARD — CHART BARS
+══════════════════════════════════════ */
+function buildChart(){
+  const max = Math.max(...SEMANAS.map(s=>s.citas));
+  const el = document.getElementById("chart-bars");
+  el.innerHTML = SEMANAS.map(s=>`
+    <div class="bar-wrap">
+      <div class="bar-val">${s.citas}</div>
+      <div class="bar" style="height:${Math.round((s.citas/max)*100)}px" title="${s.citas} citas"></div>
+      <div class="bar-label">${s.label}</div>
+    </div>`).join("");
+}
+buildChart();
+
+/* ══════════════════════════════════════
+   DASHBOARD — TOP CENTROS
+══════════════════════════════════════ */
+function buildTopCentros(){
+  const sorted = [...CENTROS_DATA].sort((a,b)=>b.citas_mes-a.citas_mes).slice(0,5);
+  const max = sorted[0].citas_mes;
+  document.getElementById("top-centros-list").innerHTML = sorted.map((c,i)=>`
+    <div style="padding:0.75rem 1.25rem; border-bottom:1px solid var(--gray-100); ${i===4?'border-bottom:none':''}">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
+        <span style="font-size:0.875rem; font-weight:500; color:var(--gray-900);">${c.nombre}</span>
+        <span style="font-size:0.82rem; font-weight:600; color:var(--teal-600);">${c.citas_mes} citas</span>
+      </div>
+      <div style="height:5px; background:var(--gray-200); border-radius:3px; overflow:hidden;">
+        <div style="height:100%; width:${Math.round((c.citas_mes/max)*100)}%; background:var(--teal-400); border-radius:3px;"></div>
+      </div>
+    </div>`).join("");
+}
+buildTopCentros();
+
+/* ══════════════════════════════════════
+   DASHBOARD — PENDIENTES
+══════════════════════════════════════ */
+function buildPendientesDash(){
+  const pendientes = CENTROS_DATA.filter(c=>c.comision_pend>0);
+  const el = document.getElementById("tbl-pendientes-dash");
+  el.innerHTML = `
+    <thead><tr>
+      <th>Centro</th><th>Provincia</th><th>Operador</th><th>Monto pendiente</th><th>Acción</th>
+    </tr></thead>
+    <tbody>${pendientes.map(c=>`<tr>
+      <td><strong>${c.nombre}</strong></td>
+      <td>${c.prov}</td>
+      <td>${c.operador}</td>
+      <td class="tbl-amount" style="color:var(--coral-600);">RD$${fmt(c.comision_pend)}</td>
+      <td>
+        <a href="https://wa.me/${c.wa}?text=${encodeURIComponent(`Hola ${c.operador}, tienes una liquidación pendiente de RD$${fmt(c.comision_pend)} con Aura Vital. Por favor confirma la transferencia. Gracias.`)}"
+           target="_blank" class="btn-whatsapp">💬 Recordar</a>
+      </td>
+    </tr>`).join("")}</tbody>`;
+}
+buildPendientesDash();
+
+/* ══════════════════════════════════════
+   CENTROS
+══════════════════════════════════════ */
+function buildCentros(){
+  const g = document.getElementById("centros-grid");
+  g.innerHTML = CENTROS_DATA.map(c=>`
+    <div class="centro-card">
+      <div class="centro-card-header">
+        <div>
+          <div class="centro-num">C${c.id}</div>
+          <div class="centro-name">Centro ${c.nombre}</div>
+          <div class="centro-prov">${c.prov}</div>
+        </div>
+        <span class="pill pill-${c.status}">${c.status==="active"?"Activo":"Pausado"}</span>
+      </div>
+      <div class="centro-body">
+        <div class="centro-row">
+          <span class="centro-row-label">Operador</span>
+          <span class="centro-row-val">${c.operador}</span>
+        </div>
+        <div class="centro-row">
+          <span class="centro-row-label">Citas este mes</span>
+          <span class="centro-row-val" style="color:var(--teal-600); font-weight:600;">${c.citas_mes}</span>
+        </div>
+        <div class="centro-row">
+          <span class="centro-row-label">Comisión generada</span>
+          <span class="centro-row-val">RD$${fmt(c.citas_mes*300)}</span>
+        </div>
+        <div class="centro-row">
+          <span class="centro-row-label">Saldo pendiente</span>
+          <span class="centro-row-val" style="color:${c.comision_pend>0?'var(--coral-600)':'var(--green-600)'}; font-weight:600;">
+            ${c.comision_pend>0?`RD$${fmt(c.comision_pend)}`:"Al día ✓"}
+          </span>
+        </div>
+      </div>
+      <div class="centro-actions">
+        <button class="btn-secondary btn-sm" onclick="editarCentro(${c.id})">✏️ Editar</button>
+        <button class="btn-danger btn-sm" onclick="pausarCentro(${c.id})">⏸ Pausar</button>
+        <a href="https://wa.me/${c.wa}" target="_blank" class="btn-whatsapp btn-sm">💬 WA</a>
+      </div>
+    </div>`).join("");
+}
+buildCentros();
+
+/* ══════════════════════════════════════
+   JORNADAS
+══════════════════════════════════════ */
+function buildJornadas(){
+  const g = document.getElementById("jornadas-grid");
+  g.innerHTML = JORNADAS_DATA.map(j=>{
+    const done = j.status==="done";
+    const pct = done
+      ? Math.round((j.asistentes/j.cap)*100)
+      : Math.round(((j.interesados||0)/j.cap)*100);
+    const val = done ? j.asistentes : (j.interesados||0);
+    const lbl = done ? "asistentes" : "interesados";
+    return `
+    <div class="jornada-card">
+      <div class="jornada-header">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between;">
+          <div>
+            <div class="jornada-title">${j.nombre}</div>
+            <div class="jornada-date">${fmtDate(j.fecha)}</div>
+            <div class="jornada-city">📍 ${j.ciudad}</div>
+          </div>
+          <span class="pill ${done?"pill-active":"pill-pending"}" style="margin-top:2px;">${done?"Completada":"Planificada"}</span>
+        </div>
+      </div>
+      <div class="jornada-body">
+        <div class="jornada-stat">
+          <span class="jornada-stat-label">${done?"Asistentes":"Interesados"}</span>
+          <span class="jornada-stat-val">${val} / ${j.cap}</span>
+        </div>
+        <div class="jornada-progress">
+          <div class="jornada-progress-fill" style="width:${pct}%"></div>
+        </div>
+        <div style="font-size:0.72rem; color:var(--gray-500); text-align:right;">${pct}% ${done?"ocupación":"de capacidad"}</div>
+      </div>
+      <div class="jornada-footer">
+        ${done
+          ? `<button class="btn-secondary btn-sm">📊 Ver reporte</button>`
+          : `<button class="btn-primary btn-sm" onclick="verInteresados('${j.ciudad}')">👥 Ver lista (${val})</button>
+             <button class="btn-secondary btn-sm">✏️ Editar</button>`
+        }
+      </div>
+    </div>`}).join("");
+}
+buildJornadas();
+
+/* ══════════════════════════════════════
+   COMISIONES
+══════════════════════════════════════ */
+function buildComisiones(){
+  const total_gen = CENTROS_DATA.reduce((s,c)=>s+c.citas_mes*300,0);
+  const total_pend = CENTROS_DATA.reduce((s,c)=>s+c.comision_pend,0);
+  const total_cob  = total_gen - total_pend;
+  const el = document.getElementById("tbl-comisiones");
+  el.innerHTML = `
+    <thead><tr>
+      <th>#</th><th>Centro</th><th>Operador</th><th>Citas mes</th>
+      <th>Total generado</th><th>Cobrado</th><th>Pendiente</th><th>Estado</th><th>Acción</th>
+    </tr></thead>
+    <tbody>
+      ${CENTROS_DATA.map(c=>{
+        const gen = c.citas_mes*300;
+        const cob = gen - c.comision_pend;
+        const paid = c.comision_pend === 0;
+        return `<tr>
+          <td style="color:var(--gray-400); font-size:0.78rem;">C${c.id}</td>
+          <td><strong>${c.nombre}</strong><br><span style="font-size:0.72rem; color:var(--gray-500);">${c.prov}</span></td>
+          <td style="font-size:0.82rem;">${c.operador}</td>
+          <td style="text-align:center; font-weight:600; color:var(--teal-600);">${c.citas_mes}</td>
+          <td class="tbl-amount">RD$${fmt(gen)}</td>
+          <td style="color:var(--green-600); font-weight:600;">RD$${fmt(cob)}</td>
+          <td style="color:${paid?'var(--green-600)':'var(--coral-600)'}; font-weight:600;">
+            ${paid?"—":` RD$${fmt(c.comision_pend)}`}
+          </td>
+          <td><span class="pill ${paid?'pill-paid':'pill-unpaid'}">${paid?"Pagado":"Pendiente"}</span></td>
+          <td>
+            ${paid
+              ? `<span style="font-size:0.78rem; color:var(--green-600);">✓ Al día</span>`
+              : `<a href="https://wa.me/${c.wa}?text=${encodeURIComponent(`Hola ${c.operador}! Tienes RD$${fmt(c.comision_pend)} pendientes de transferencia a Aura Vital. ¿Puedes confirmarnos cuando lo realizas? Gracias 🙏`)}"
+                    target="_blank" class="btn-whatsapp btn-sm">💬 Cobrar</a>`
+            }
+          </td>
+        </tr>`;
+      }).join("")}
+      <tr class="tbl-total">
+        <td colspan="3">Totales</td>
+        <td style="text-align:center; font-weight:700;">${CENTROS_DATA.reduce((s,c)=>s+c.citas_mes,0)}</td>
+        <td>RD$${fmt(total_gen)}</td>
+        <td style="color:var(--green-600);">RD$${fmt(total_cob)}</td>
+        <td style="color:var(--coral-600);">RD$${fmt(total_pend)}</td>
+        <td colspan="2"></td>
+      </tr>
+    </tbody>`;
+}
+buildComisiones();
+
+/* ══════════════════════════════════════
+   ALERTAS 30 DÍAS
+══════════════════════════════════════ */
+function buildAlertas30(){
+  const el = document.getElementById("alertas30-list");
+  el.innerHTML = ALERTAS_DATA.map(a=>{
+    const overdue = a.dias > 35;
+    const msg = `Hola ${a.nombre.split(" ")[0]}! 🌿 Han pasado ${a.dias} días desde tu análisis de bienestar Aura Vital (código: ${a.codigo}). Es el momento ideal para tu reevaluación y medir tu progreso. ¿Quieres agendar tu próxima cita? Estamos aquí para ayudarte 💪`;
+    return `
+    <div class="alert-item">
+      <div class="alert-ava">${initials(a.nombre)}</div>
+      <div style="flex:1;">
+        <div style="font-size:0.875rem; font-weight:500; color:var(--gray-900);">${a.nombre}</div>
+        <div style="font-size:0.75rem; color:var(--gray-500);">${a.centro} · <span style="font-family:monospace; color:var(--teal-600);">${a.codigo}</span></div>
+      </div>
+      <span class="alert-days ${overdue?'days-overdue':'days-due'}">${a.dias} días</span>
+      <a href="https://wa.me/${a.tel}?text=${encodeURIComponent(msg)}"
+         target="_blank" class="btn-whatsapp btn-sm">💬 Recordar</a>
+    </div>`}).join("");
+}
+buildAlertas30();
+
+function recordarTodos(){
+  if(!confirm(`¿Enviar recordatorio de reevaluación a los ${ALERTAS_DATA.length} clientes en alerta?`)) return;
+  alert("✅ Se abrirán los chats de WhatsApp de cada cliente para que puedas enviar el recordatorio. (En la versión con Supabase esto se automatiza.)");
+}
+
+/* ══════════════════════════════════════
+   MODAL CENTRO
+══════════════════════════════════════ */
+function abrirModalCentro(id){
+  document.getElementById("modal-centro-title").textContent = id ? "Editar centro" : "Agregar nuevo centro";
+  if(!id){
+    ["mc-nombre","mc-prov","mc-dir","mc-operador","mc-wa","mc-email","mc-horarios"]
+      .forEach(f=>{ const el=document.getElementById(f); if(el)el.value=""; });
+  }
+  document.getElementById("modal-centro").classList.add("open");
+}
+function guardarCentro(){
+  const nombre = document.getElementById("mc-nombre").value.trim();
+  const prov   = document.getElementById("mc-prov").value;
+  const op     = document.getElementById("mc-operador").value.trim();
+  const wa     = document.getElementById("mc-wa").value.trim();
+  if(!nombre || !prov || !op || !wa){
+    alert("Completa los campos obligatorios: nombre, provincia, operador y WhatsApp.");
+    return;
+  }
+  CENTROS_DATA.push({
+    id: CENTROS_DATA.length+1,
+    nombre, prov,
+    operador: op, wa,
+    citas_mes: 0, comision_pend: 0, status:"active"
+  });
+  buildCentros();
+  cerrarModal("modal-centro");
+  alert(`✅ Centro "${nombre}" agregado exitosamente.`);
+}
+function editarCentro(id){ abrirModalCentro(id); }
+function pausarCentro(id){
+  const c = CENTROS_DATA.find(x=>x.id===id);
+  if(c && confirm(`¿Pausar el centro "${c.nombre}"? El operador no recibirá nuevas citas.`)){
+    c.status = c.status==="active"?"paused":"active";
+    buildCentros();
+  }
+}
+
+/* ══════════════════════════════════════
+   MODAL JORNADA
+══════════════════════════════════════ */
+function abrirModalJornada(){
+  const sel = document.getElementById("mj-centro");
+  sel.innerHTML = `<option value="">Selecciona un centro...</option>`+
+    CENTROS_DATA.filter(c=>c.status==="active").map(c=>`<option value="${c.id}">${c.nombre} — ${c.prov}</option>`).join("");
+  document.getElementById("modal-jornada").classList.add("open");
+}
+function guardarJornada(){
+  const nombre = document.getElementById("mj-nombre").value.trim();
+  const ciudad = document.getElementById("mj-ciudad").value.trim();
+  const fecha  = document.getElementById("mj-fecha").value;
+  const cap    = parseInt(document.getElementById("mj-cap").value)||60;
+  if(!nombre || !ciudad || !fecha){ alert("Completa nombre, ciudad y fecha."); return; }
+  JORNADAS_DATA.push({ nombre, ciudad, fecha, cap, interesados:0, status:"planned" });
+  buildJornadas();
+  cerrarModal("modal-jornada");
+  alert(`✅ Jornada "${nombre}" creada. Ya puedes empezar a recolectar interesados.`);
+}
+
+function cerrarModal(id){
+  document.getElementById(id).classList.remove("open");
+}
+document.querySelectorAll(".modal-overlay").forEach(m=>{
+  m.addEventListener("click", e=>{ if(e.target===m) m.classList.remove("open"); });
+});
+
+function verInteresados(ciudad){
+  alert(`Lista de interesados para la jornada de ${ciudad}.\n\nEn la versión con Supabase esta vista mostrará el listado completo con nombre, teléfono y fecha de registro de cada persona interesada.`);
+}
+</script>
+</body>
+</html>
