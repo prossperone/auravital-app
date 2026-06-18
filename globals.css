@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --teal-900: #04342C;
+  --teal-800: #085041;
+  --teal-600: #0F6E56;
+  --teal-400: #1D9E75;
+  --teal-200: #5DCAA5;
+  --teal-100: #9FE1CB;
+  --teal-50:  #E1F5EE;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply text-gray-900 bg-white; }
+}
+
+@layer components {
+  /* ── Botones ── */
+  .btn-primary {
+    @apply bg-teal-600 text-white font-semibold rounded-xl px-6 py-3
+           hover:bg-teal-800 active:scale-[0.98] transition-all
+           inline-flex items-center gap-2 cursor-pointer;
+  }
+  .btn-secondary {
+    @apply bg-white text-gray-700 border border-gray-200 font-medium rounded-xl px-5 py-3
+           hover:bg-gray-50 hover:border-gray-300 transition-all
+           inline-flex items-center gap-2 cursor-pointer;
+  }
+  .btn-whatsapp {
+    @apply bg-[#25D366] text-white font-semibold rounded-xl px-5 py-3
+           hover:bg-[#1da851] transition-all
+           inline-flex items-center gap-2 cursor-pointer;
+  }
+
+  /* ── Formulario ── */
+  .form-input {
+    @apply w-full border-[1.5px] border-gray-200 rounded-[10px] px-4 py-3
+           text-gray-900 text-sm font-sans bg-white
+           focus:outline-none focus:border-teal-400
+           focus:ring-2 focus:ring-teal-400/10 transition-all;
+  }
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1.5;
+  }
+
+  /* ── Cards ── */
+  .card {
+    @apply bg-white border border-gray-200 rounded-[14px] overflow-hidden;
+  }
+  .card-header {
+    @apply px-5 py-4 border-b border-gray-100 flex items-center justify-between;
+  }
+  .card-body { @apply p-5; }
+
+  /* ── Status pills ── */
+  .pill {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+  .pill-active   { @apply bg-green-50  text-green-700; }
+  .pill-pending  { @apply bg-amber-50  text-amber-700; }
+  .pill-done     { @apply bg-teal-50   text-teal-700;  }
+  .pill-error    { @apply bg-red-50    text-red-700;   }
+
+  /* ── Sidebar nav ── */
+  .nav-item {
+    @apply flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm
+           text-white/55 hover:bg-white/[0.06] hover:text-white/85
+           transition-all cursor-pointer w-full text-left;
+  }
+  .nav-item.active {
+    @apply bg-teal-400/20 text-teal-200;
+  }
+
+  /* ── Disclaimer ── */
+  .disclaimer-box {
+    @apply flex gap-2 items-start bg-amber-50 border border-amber-200
+           rounded-[10px] p-3 text-xs text-amber-800 leading-relaxed;
+  }
+}
+
+/* ── Animaciones ── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
+}
+@keyframes scan-line {
+  0%   { top: 20%; }
+  50%  { top: 80%; }
+  100% { top: 20%; }
+}
+@keyframes spin-ring {
+  to { transform: rotate(360deg); }
+}
+
+.animate-pulse-dot  { animation: pulse-dot  2s ease-in-out infinite; }
+.animate-scan-line  { animation: scan-line  2s ease-in-out infinite; }
+.animate-spin-ring  { animation: spin-ring  2s linear     infinite; }
