@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Requerido para el Dockerfile multi-stage (Spaceship Hyperlift)
+  reactStrictMode: true,
   output: 'standalone',
-
-  images: {
-    domains: ['your-supabase-project.supabase.co'],
+  // Esta regla fuerza al compilador a encontrar @/lib/supabase sin importar la extensión
+  webpack: (config) => {
+    config.resolve.alias['@'] = __dirname;
+    return config;
   },
 }
 
