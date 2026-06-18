@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient }              from '@supabase/supabase-js'
-import Anthropic                     from '@anthropic-ai/sdk'
+import { createClient }             from '@supabase/supabase-js'
 
-const supabase  = createClient(
+const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
-const anthropic = new Anthropic()   // usa ANTHROPIC_API_KEY del entorno
 
 // ── POST /api/reports ─────────────────────────────────────────
-// Crea el reporte, genera el plan IA y activa la liquidación
+// Crea el reporte, genera el plan automatizado y activa la liquidación
 export async function POST(req: NextRequest) {
   try {
     const {
@@ -32,16 +30,25 @@ export async function POST(req: NextRequest) {
       .single()
     if (apptErr || !appt) throw new Error('Cita no encontrada')
 
-    // 2. Generar plan con Claude AI
-    const aiPlan = await generateHealthPlan({
-      clientName:     appt.client_name,
-      clientAge:      appt.client_age ?? 0,
-      attentionAreas: attention_areas,
-      supplements:    supplements.map((s: any) => s.name),
-      operatorNotes:  operator_notes ?? '',
-    })
+    // 2. Generar plan de bienestar automatizado y nativo (Reemplazo de Claude)
+    const aiPlan = {
+      summary: `Plan personalizado de bienestar de 90 días optimizado para ${appt.client_name}. Este programa está enfocado en balancear los indicadores cuánticos evaluados y potenciar su vitalidad integral.`,
+      nutrition: [
+        `Incrementar el consumo de agua estructurada o filtrada diariamente adaptada a sus necesidades físicas.`,
+        `Aumentar el consumo de alimentos antioxidantes y verdes para dar soporte directo a las siguientes áreas evaluadas: ${attention_areas.join(', ')}.`,
+        `Reducir drásticamente harinas refinadas y azúcares procesados para optimizar el biocampo energético celular.`,
+        `Mantener horarios fijos de alimentación para estabilizar los ritmos metabólicos basales.`
+      ],
+      exercise: [
+        `Realizar actividad física de intensidad moderada (caminata ágil o estiramientos) por un mínimo de 30 minutos al día.`,
+        `Incorporar ejercicios de respiración consciente (Pranayama o respiración diafragmática) en la mañana para mejorar la oxigenación celular.`,
+        `Dar prioridad al descanso reparador nocturno, garantizando entre 7 y 8 horas de sueño continuo.`
+      ],
+      products: supplements.map((s: any) => `Consumir de manera constante ${s.name} bajo la dosis sugerida de: ${s.dose || 'según indicación'} para el correcto soporte nutricional celular.`),
+      next_steps: `Es de vital importancia mantener la disciplina en las pautas durante los próximos 30 días. Su cuerpo pasará por un proceso de adaptación celular, por lo que es mandatorio agendar su reescaneo cuántico al término de este ciclo para cuantificar las mejoras y ajustar las dosis.`
+    }
 
-    // 3. Calcular fechas del plan
+    // 3. Calcular fechas del plan (90 días)
     const today   = new Date()
     const endDate = new Date(today)
     endDate.setDate(endDate.getDate() + 90)
@@ -64,7 +71,7 @@ export async function POST(req: NextRequest) {
       .single()
     if (reportErr) throw reportErr
 
-    // 5. Marcar cita como atendida (activa liquidación automáticamente vía trigger)
+    // 5. Marcar cita como atendida (activa liquidación automáticamente vía trigger en BD)
     await supabase
       .from('appointments')
       .update({ status: 'attended' })
@@ -81,71 +88,6 @@ export async function POST(req: NextRequest) {
     console.error('[POST /api/reports]', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
-}
-
-// ── Generador de plan de salud con Claude ────────────────────
-async function generateHealthPlan({
-  clientName,
-  clientAge,
-  attentionAreas,
-  supplements,
-  operatorNotes,
-}: {
-  clientName:     string
-  clientAge:      number
-  attentionAreas: string[]
-  supplements:    string[]
-  operatorNotes:  string
-}) {
-  const prompt = `
-Eres un asistente de bienestar de Aura Vital. Con base en los resultados del análisis cuántico no invasivo, genera un plan de bienestar personalizado de 90 días.
-
-DATOS DEL CLIENTE:
-- Nombre: ${clientName}
-- Edad: ${clientAge} años
-- Áreas que requieren atención: ${attentionAreas.join(', ')}
-- Suplementos recomendados: ${supplements.join(', ')}
-- Notas del operador: ${operatorNotes || 'Ninguna'}
-
-IMPORTANTE: Este análisis no es un diagnóstico médico. Es una evaluación orientativa de bienestar.
-
-Responde SOLO en JSON con esta estructura exacta, sin texto adicional ni backticks:
-{
-  "summary": "Resumen personalizado de 2-3 oraciones sobre el estado general del cliente",
-  "nutrition": [
-    "Recomendación de alimentación 1",
-    "Recomendación de alimentación 2",
-    "Recomendación de alimentación 3",
-    "Recomendación de alimentación 4"
-  ],
-  "exercise": [
-    "Recomendación de ejercicio 1",
-    "Recomendación de ejercicio 2",
-    "Recomendación de ejercicio 3"
-  ],
-  "products": [
-    "Consejo de suplementación 1 con dosis sugerida",
-    "Consejo de suplementación 2 con dosis sugerida",
-    "Consejo de suplementación 3 con dosis sugerida"
-  ],
-  "next_steps": "Qué esperar en los próximos 30 días y por qué es importante el reescaneo"
-}
-`
-
-  const message = await anthropic.messages.create({
-    model:      'claude-sonnet-4-6',
-    max_tokens: 1000,
-    messages: [{ role: 'user', content: prompt }],
-  })
-
-  const text = message.content
-    .filter((b: any) => b.type === 'text')
-    .map((b: any)    => b.text)
-    .join('')
-    .replace(/```json|```/g, '')
-    .trim()
-
-  return JSON.parse(text)
 }
 
 // ── GET /api/reports?token=SHARE_TOKEN ───────────────────────
