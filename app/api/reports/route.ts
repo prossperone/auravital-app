@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient }             from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
+
+// Esto le dice a Next.js que no intente pre-renderizar esta ruta de forma estática en el Build
+export const dynamic = 'force-dynamic'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -7,7 +10,6 @@ const supabase = createClient(
 )
 
 // ── POST /api/reports ─────────────────────────────────────────
-// Crea el reporte, genera el plan automatizado y activa la liquidación
 export async function POST(req: NextRequest) {
   try {
     const {
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
       .single()
     if (apptErr || !appt) throw new Error('Cita no encontrada')
 
-    // 2. Generar plan de bienestar automatizado y nativo (Reemplazo de Claude)
+    // 2. Generar plan de bienestar automatizado y nativo
     const aiPlan = {
       summary: `Plan personalizado de bienestar de 90 días optimizado para ${appt.client_name}. Este programa está enfocado en balancear los indicadores cuánticos evaluados y potenciar su vitalidad integral.`,
       nutrition: [
@@ -71,7 +73,7 @@ export async function POST(req: NextRequest) {
       .single()
     if (reportErr) throw reportErr
 
-    // 5. Marcar cita como atendida (activa liquidación automáticamente vía trigger en BD)
+    // 5. Marcar cita como atendida
     await supabase
       .from('appointments')
       .update({ status: 'attended' })
