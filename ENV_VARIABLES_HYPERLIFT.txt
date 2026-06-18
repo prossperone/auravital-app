@@ -1,0 +1,84 @@
+# ============================================================
+#  AURA VITAL — Variables de entorno para Spaceship Hyperlift
+#  auravital.lat
+#
+#  Instrucciones para Alf:
+#  Ingresar cada variable en Hyperlift Manager →
+#  Environment Variables (NO compartir estos valores en público)
+# ============================================================
+
+
+# ── GRUPO 1: SUPABASE (Base de datos) ────────────────────────
+# Obtener en: supabase.com → tu proyecto → Settings → API
+
+NEXT_PUBLIC_SUPABASE_URL=https://TU_PROYECTO.supabase.co
+# Ejemplo: https://abcdefghijklm.supabase.co
+
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# La "anon / public" key del proyecto
+
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# La "service_role" key — ⚠️ NUNCA exponer al cliente (solo server-side)
+
+
+# ── GRUPO 2: EMAIL (Resend) ───────────────────────────────────
+# Obtener en: resend.com → API Keys → Create API Key
+# Plan gratuito: 3,000 emails/mes
+
+RESEND_API_KEY=re_XXXXXXXXXXXXXXXXXXXXXXXXXX
+
+EMAIL_FROM=notificaciones@auravital.lat
+# Requiere verificar el dominio auravital.lat en resend.com → Domains
+
+
+# ── GRUPO 3: ANTHROPIC / CLAUDE (Plan de salud con IA) ───────
+# Obtener en: console.anthropic.com → API Keys
+# Se usa SOLO para generar el plan de salud de 90 días por cliente
+
+ANTHROPIC_API_KEY=sk-ant-XXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+# ── GRUPO 4: APP CONFIG (Valores fijos de negocio) ───────────
+
+NEXT_PUBLIC_WA_CENTRAL=18095550000
+# Número de WhatsApp centralizado de Aura Vital (sin + ni espacios)
+# Formato correcto: 18091234567
+
+NEXT_PUBLIC_COMISION_POR_CITA=300
+# Comisión en RD$ que cada centro le paga a Aura Vital por cliente atendido
+
+NEXT_PUBLIC_APP_URL=https://auravital.lat
+# URL pública de la app una vez desplegada
+
+
+# ── GRUPO 5: NEXT.JS (Configuración interna) ─────────────────
+
+NODE_ENV=production
+# Siempre "production" en Hyperlift
+
+NEXT_TELEMETRY_DISABLED=1
+# Desactiva telemetría de Next.js (buena práctica)
+
+PORT=3000
+# Puerto interno del container (Hyperlift lo mapea al 80/443)
+
+
+# ============================================================
+#  RESUMEN PARA ALF — Lista de nombres de variables
+#  (solo los nombres, los valores los pones tú en Hyperlift)
+# ============================================================
+#
+#  NEXT_PUBLIC_SUPABASE_URL          ← de Supabase
+#  NEXT_PUBLIC_SUPABASE_ANON_KEY     ← de Supabase
+#  SUPABASE_SERVICE_ROLE_KEY         ← de Supabase (privada)
+#  RESEND_API_KEY                    ← de Resend
+#  EMAIL_FROM                        ← notificaciones@auravital.lat
+#  ANTHROPIC_API_KEY                 ← de console.anthropic.com
+#  NEXT_PUBLIC_WA_CENTRAL            ← número WhatsApp Aura Vital
+#  NEXT_PUBLIC_COMISION_POR_CITA     ← 300
+#  NEXT_PUBLIC_APP_URL               ← https://auravital.lat
+#  NODE_ENV                          ← production
+#  NEXT_TELEMETRY_DISABLED           ← 1
+#  PORT                              ← 3000
+#
+# ============================================================

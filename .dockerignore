@@ -1,0 +1,36 @@
+# Dependencias (se instalan dentro del container)
+node_modules
+npm-debug.log*
+
+# Build output
+.next
+out
+
+# Control de versiones
+.git
+.gitignore
+
+# Variables de entorno locales (NUNCA al container)
+.env
+.env.local
+.env.development
+.env.production
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode
+.idea
+
+# Tests
+coverage
+__tests__
+*.test.ts
+*.test.tsx
+*.spec.ts
+
+# Docs / extras
+README.md
+*.sql
