@@ -1,7 +1,10 @@
-export const dynamic = 'force-dynamic''use client'
+'use client'
+
+export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react'
 import { supabase, createAppointment, getCentersByProvince, type Center } from '@/lib/supabase'
+// ... 
 
 // ── Provincias disponibles ───────────────────────────────────
 const PROVINCES = [
