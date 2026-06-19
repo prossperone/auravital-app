@@ -46,7 +46,13 @@
     font-size: 16px;
     line-height: 1.6;
     color: var(--gray-700);
-    background: var(--white);
+    background-color: var(--white);
+    /* Fondo con entramado cuántico sutil casi imperceptible */
+    background-image: 
+      radial-gradient(rgba(29, 158, 117, 0.03) 1px, transparent 0),
+      radial-gradient(rgba(4, 52, 44, 0.02) 2px, transparent 0);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -100,6 +106,7 @@
     padding: 3rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
   }
   .hero-eyebrow {
     display: inline-flex;
@@ -184,7 +191,7 @@
   .hero-stat-val { font-size: 1.75rem; font-weight: 700; color: var(--gray-900); }
   .hero-stat-lbl { font-size: 0.85rem; color: var(--gray-500); font-weight: 500; margin-top: 2px; }
 
-  /* Hero visual right - Rediseñado con Imagen Real y Larga Vida */
+  /* Hero visual right */
   .hero-visual {
     display: flex;
     flex-direction: column;
@@ -198,7 +205,6 @@
     max-width: 420px;
     aspect-ratio: 0.95;
     border-radius: 32px;
-    /* Imagen premium de estilo de vida saludable y longevidad */
     background: linear-gradient(180deg, rgba(4, 52, 44, 0.2) 0%, rgba(4, 52, 44, 0.5) 100%), 
                 url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=600&auto=format&fit=crop') no-repeat center center;
     background-size: cover;
@@ -279,8 +285,8 @@
   }
 
   /* ── SECTION WRAPPER ── */
-  .section { padding: 6rem 1.5rem; }
-  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section { padding: 6rem 1.5rem; position: relative; }
+  .section-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 2; }
   .section-label {
     font-size: 0.8rem;
     font-weight: 700;
@@ -306,7 +312,11 @@
   }
 
   /* ── VIDEO SECTION ── */
-  .video-section { background: var(--gray-50); border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200); }
+  .video-section { 
+    background: var(--gray-50); 
+    border-top: 1px solid var(--gray-200); 
+    border-bottom: 1px solid var(--gray-200); 
+  }
   .video-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -375,7 +385,22 @@
   }
 
   /* ── INDICATORS GRID ── */
-  .indicators-section { background: var(--white); }
+  .indicators-section { 
+    background: var(--white); 
+  }
+  /* Fondo tecnológico sutil con círculos concéntricos de ondas de escáner en la sección de indicadores */
+  .indicators-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    background-image: 
+      radial-gradient(circle at 80% 20%, transparent 100px, var(--teal-900) 101px, var(--teal-900) 103px, transparent 104px),
+      radial-gradient(circle at 80% 20%, transparent 200px, var(--teal-900) 201px, var(--teal-900) 203px, transparent 204px),
+      radial-gradient(circle at 80% 20%, transparent 300px, var(--teal-900) 301px, var(--teal-900) 303px, transparent 304px);
+    z-index: 1;
+    pointer-events: none;
+  }
   .indicators-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -383,7 +408,7 @@
     margin-top: 3rem;
   }
   .indicator-card {
-    background: var(--gray-50);
+    background: rgba(249, 250, 251, 0.8);
     border: 1px solid var(--gray-200);
     border-radius: 16px;
     padding: 1.25rem;
@@ -394,6 +419,7 @@
     color: var(--gray-800);
     font-weight: 600;
     transition: all 0.2s ease;
+    backdrop-filter: blur(2px);
   }
   .indicator-card:hover { transform: translateY(-2px); border-color: var(--teal-400); background: var(--white); box-shadow: var(--shadow-md); }
   .ind-dot {
@@ -434,6 +460,21 @@
 
   /* ── BOOKING FORM ── */
   .booking-section { background: var(--gray-50); }
+  /* Fondo con ondas suaves detrás de la tarjeta de reservas */
+  .booking-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.02;
+    background-image: 
+      linear-gradient(45deg, var(--teal-900) 25%, transparent 25%), 
+      linear-gradient(-45deg, var(--teal-900) 25%, transparent 25%), 
+      linear-gradient(45deg, transparent 75%, var(--teal-900) 75%), 
+      linear-gradient(-45deg, transparent 75%, var(--teal-900) 75%);
+    background-size: 40px 40px;
+    z-index: 1;
+    pointer-events: none;
+  }
   .booking-card {
     background: var(--white);
     border: 1px solid var(--gray-200);
@@ -442,6 +483,8 @@
     max-width: 720px;
     margin: 0 auto;
     box-shadow: var(--shadow-xl);
+    position: relative;
+    z-index: 2;
   }
   .booking-card h2 {
     font-size: 1.75rem;
@@ -579,11 +622,12 @@
     gap: 1.5rem;
   }
   .testimonial-card {
-    background: var(--gray-50);
+    background: rgba(249, 250, 251, 0.9);
     border: 1px solid var(--gray-200);
     border-radius: 20px;
     padding: 2rem;
     box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(2px);
   }
   .stars { color: #F59E0B; font-size: 0.95rem; margin-bottom: 1rem; letter-spacing: 2px; }
   .testimonial-text { font-size: 1rem; color: var(--gray-700); line-height: 1.7; margin-bottom: 1.5rem; font-style: italic; }
@@ -660,7 +704,7 @@
   <a href="#agendar" class="nav-cta">Agendar ahora</a>
 </nav>
 
-<!-- HERO REDISEÑADO CON IMAGEN HUMANA Y BIENESTAR -->
+<!-- HERO CON IMAGEN HUMANA Y BIENESTAR -->
 <section class="section" style="padding-top: 3rem; padding-bottom: 3rem;">
   <div class="hero">
     <div class="hero-content">
@@ -692,7 +736,6 @@
       </div>
     </div>
     <div class="hero-visual">
-      <!-- Contenedor con la imagen real de fondo -->
       <div class="scanner-anim">
         <div class="scanner-line"></div>
         <div class="scanner-ring">
@@ -725,7 +768,7 @@
       <div class="video-info">
         <h3>¿Qué incluye el análisis de bienestar?</h3>
         <p>
-          El análisis incluye una evaluación rápida y no invasiva de más de 45 indicadores relacionados con circulación, metabolismo, digestión, hígado, riñones, vitaminas, minerales, sistema óseo, memoria, estrés oxidativo, colágeno, bienestar hormonal y más.
+          El análisis incluye una evaluación rápida y no invasiva de más de 45 indicadores relacionados con circulación, metabolismo, digestión, hígado, riñones, vitamins, minerales, sistema óseo, memoria, estrés oxidativo, colágeno, bienestar hormonal y más.
         </p>
         <p>
           Además, te explicamos los resultados mediante nuestro sistema <strong>"Efecto Dominó"</strong>, para identificar qué áreas podrían estar influyendo en tu bienestar general.
