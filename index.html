@@ -47,7 +47,6 @@
     line-height: 1.6;
     color: var(--gray-700);
     background-color: var(--white);
-    /* Fondo con entramado cuántico sutil casi imperceptible */
     background-image: 
       radial-gradient(rgba(29, 158, 117, 0.03) 1px, transparent 0),
       radial-gradient(rgba(4, 52, 44, 0.02) 2px, transparent 0);
@@ -106,7 +105,6 @@
     padding: 3rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
-    position: relative;
   }
   .hero-eyebrow {
     display: inline-flex;
@@ -335,18 +333,6 @@
     width: 100%; height: 100%;
     border: none;
   }
-  .video-placeholder {
-    width: 100%; height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    background: var(--teal-900);
-    color: var(--teal-100);
-  }
-  .video-placeholder-icon { font-size: 3.5rem; opacity: 0.7; }
-  .video-placeholder-text { font-size: 0.9rem; opacity: 0.6; font-weight: 500; }
   
   .video-info h3 {
     font-size: 1.5rem;
@@ -388,7 +374,6 @@
   .indicators-section { 
     background: var(--white); 
   }
-  /* Fondo tecnológico sutil con círculos concéntricos de ondas de escáner en la sección de indicadores */
   .indicators-section::before {
     content: '';
     position: absolute;
@@ -460,7 +445,6 @@
 
   /* ── BOOKING FORM ── */
   .booking-section { background: var(--gray-50); }
-  /* Fondo con ondas suaves detrás de la tarjeta de reservas */
   .booking-section::before {
     content: '';
     position: absolute;
@@ -753,22 +737,25 @@
   </div>
 </section>
 
-<!-- VIDEO + INFO -->
+<!-- VÍDEO REAL DE YOUTUBE ACTIVADO -->
 <section class="section video-section" id="que-incluye">
   <div class="section-inner">
     <div class="video-grid">
       <div>
         <div class="video-embed">
-          <div class="video-placeholder">
-            <span class="video-placeholder-icon">▶</span>
-            <span class="video-placeholder-text">Mañana conectaremos tu video de 30s aquí</span>
-          </div>
+          <!-- Reproductor embebido con tu vídeo real de 30s -->
+          <iframe
+            src="https://www.youtube.com/embed/jrn-oA4Q2s8?rel=0&modestbranding=1"
+            title="Aura Vital — Análisis de bienestar celular"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
         </div>
       </div>
       <div class="video-info">
         <h3>¿Qué incluye el análisis de bienestar?</h3>
         <p>
-          El análisis incluye una evaluación rápida y no invasiva de más de 45 indicadores relacionados con circulación, metabolismo, digestión, hígado, riñones, vitamins, minerales, sistema óseo, memoria, estrés oxidativo, colágeno, bienestar hormonal y más.
+          El análisis incluye una evaluación rápida y no invasiva de más de 45 indicadores relacionados con circulación, metabolismo, digestión, hígado, riñones, vitaminas, minerales, sistema óseo, memoria, estrés oxidativo, colágeno, bienestar hormonal y más.
         </p>
         <p>
           Además, te explicamos los resultados mediante nuestro sistema <strong>"Efecto Dominó"</strong>, para identificar qué áreas podrían estar influyendo en tu bienestar general.
