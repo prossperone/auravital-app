@@ -131,7 +131,7 @@
     flex-shrink: 0;
   }
   .user-name { font-size: 0.8rem; font-weight: 500; color: rgba(255,255,255,0.75); }
-  .user-center { font-size: 0.7rem; color: rgba(255,255,255,0.35); }
+  .user-center { font-size: 0.7rem; color: rgba(255,255,255,0.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
 
   /* ── MAIN ── */
   .main {
@@ -253,7 +253,7 @@
     white-space: nowrap;
   }
   .status-pending  { background: var(--amber-50);  color: var(--amber-600); }
-  .status-done     { background: var(--green-50);  color: var(--green-600); }
+  .status-done      { background: var(--green-50);  color: var(--green-600); }
   .status-absent   { background: var(--coral-50);  color: var(--coral-600); }
   .btn-scan {
     background: var(--teal-600);
@@ -629,7 +629,7 @@
       <div class="user-avatar">OP</div>
       <div>
         <div class="user-name">Operador Centro</div>
-        <div class="user-center">Villa Mella Norte</div>
+        <div class="user-center" title="Estación Gregorio Luperón (Plaza Caché)">G. Luperón (Plaza Caché)</div>
       </div>
     </div>
   </aside>
@@ -908,7 +908,7 @@
 <script>
 /* ── DATA ── */
 const HOY_CITAS = [
-  { hora:"9:00 AM",  nombre:"Rosa Montero",    edad:42, codigo:"AV-2024-51204", tel:"8095550101", status:"done"    },
+  { hora:"9:00 AM",  nombre:"Rosa Montero",   edad:42, codigo:"AV-2024-51204", tel:"8095550101", status:"done"    },
   { hora:"10:00 AM", nombre:"Pedro Alcántara",  edad:55, codigo:"AV-2024-51887", tel:"8095550102", status:"done"    },
   { hora:"11:00 AM", nombre:"Lucía Fernández",  edad:38, codigo:"AV-2024-52001", tel:"8095550103", status:"done"    },
   { hora:"2:00 PM",  nombre:"Carlos Jiménez",   edad:47, codigo:"AV-2024-52318", tel:"8095550104", status:"pending" },
@@ -1128,8 +1128,8 @@ function buildLiquidacion() {
 buildLiquidacion();
 
 function confirmarTransferencia() {
-  const msg = `Hola Aura Vital! Confirmo la transferencia del día ${new Date().toLocaleDateString("es-DO")}. Centro: Villa Mella Norte. Clientes atendidos: 3. Monto transferido: RD$900. Por favor confirmen la recepción.`;
-  const wa = `https://wa.me/18095550000?text=${encodeURIComponent(msg)}`;
+  const msg = `Hola Aura Vital! Confirmo la transferencia del día ${new Date().toLocaleDateString("es-DO")}. Centro: Estación Gregorio Luperón (Plaza Caché). Clientes atendidos: 3. Monto transferido: RD$900. Por favor confirmen la recepción.`;
+  const wa = `https://wa.me/18099757141?text=${encodeURIComponent(msg)}`;
   if (confirm("¿Confirmar que realizaste la transferencia de RD$900 a Aura Vital hoy?")) {
     window.open(wa, "_blank");
   }
@@ -1157,6 +1157,12 @@ function buildAlertas() {
     list.appendChild(div);
   });
 }
+
+buildAgenda();
+buildAlertas();
+</script>
+</body>
+</html>
 
 buildAgenda();
 buildAlertas();
