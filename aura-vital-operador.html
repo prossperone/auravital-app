@@ -908,12 +908,12 @@
 <script>
 /* ── DATA ── */
 const HOY_CITAS = [
-  { hora:"9:00 AM",  nombre:"Rosa Montero",   edad:42, codigo:"AV-2024-51204", tel:"8095550101", status:"done"    },
-  { hora:"10:00 AM", nombre:"Pedro Alcántara",  edad:55, codigo:"AV-2024-51887", tel:"8095550102", status:"done"    },
-  { hora:"11:00 AM", nombre:"Lucía Fernández",  edad:38, codigo:"AV-2024-52001", tel:"8095550103", status:"done"    },
-  { hora:"2:00 PM",  nombre:"Carlos Jiménez",   edad:47, codigo:"AV-2024-52318", tel:"8095550104", status:"pending" },
-  { hora:"3:00 PM",  nombre:"Ana De Los Santos",edad:33, codigo:"AV-2024-52445", tel:"8095550105", status:"pending" },
-  { hora:"4:00 PM",  nombre:"Marcos Batista",   edad:61, codigo:"AV-2024-52612", tel:"8095550106", status:"pending" },
+  { hora:"9:00 AM",  nombre:"Rosa Montero",   edad:42, codigo:"AV-2024-51204", tel:"18099757141", status:"done"    },
+  { hora:"10:00 AM", nombre:"Pedro Alcántara",  edad:55, codigo:"AV-2024-51887", tel:"18099757141", status:"done"    },
+  { hora:"11:00 AM", nombre:"Lucía Fernández",  edad:38, codigo:"AV-2024-52001", tel:"18099757141", status:"done"    },
+  { hora:"2:00 PM",  nombre:"Carlos Jiménez",   edad:47, codigo:"AV-2024-52318", tel:"18099757141", status:"pending" },
+  { hora:"3:00 PM",  nombre:"Ana De Los Santos",edad:33, codigo:"AV-2024-52445", tel:"18099757141", status:"pending" },
+  { hora:"4:00 PM",  nombre:"Marcos Batista",   edad:61, codigo:"AV-2024-52612", tel:"18099757141", status:"pending" },
 ];
 
 const AREAS = [
@@ -939,7 +939,7 @@ const SUPLEMENTOS = [
   { nombre:"Vitamina D3",        dosis:"5,000 UI · 1 vez al día con comida" },
   { nombre:"Magnesio Glicinato", dosis:"400 mg · Antes de dormir" },
   { nombre:"Omega-3",            dosis:"2 cápsulas · Con el almuerzo" },
-  { nombre:"Vitamina C",         dosis:"1,000 mg · 2 veces al día" },
+  { font:"Vitamina C",         dosis:"1,000 mg · 2 veces al día" },
   { nombre:"Probióticos",        dosis:"1 cápsula · En ayunas" },
   { nombre:"Zinc",               dosis:"25 mg · 1 vez al día con comida" },
   { nombre:"Complejo B",         dosis:"1 cápsula · En la mañana" },
@@ -951,9 +951,9 @@ const SUPLEMENTOS = [
 ];
 
 const ALERTAS_30 = [
-  { nombre:"Rosa Montero",    codigo:"AV-2024-38201", dias:35, tel:"8095550101" },
-  { nombre:"Luis Tavarez",    codigo:"AV-2024-39442", dias:32, tel:"8095550201" },
-  { nombre:"Carmen Vásquez",  codigo:"AV-2024-40018", dias:30, tel:"8095550301" },
+  { nombre:"Rosa Montero",    codigo:"AV-2024-38201", dias:35, tel:"18099757141" },
+  { nombre:"Luis Tavarez",    codigo:"AV-2024-39442", dias:32, tel:"18099757141" },
+  { nombre:"Carmen Vásquez",  codigo:"AV-2024-40018", dias:30, tel:"18099757141" },
 ];
 
 /* ── UTILS ── */
@@ -1157,12 +1157,6 @@ function buildAlertas() {
     list.appendChild(div);
   });
 }
-
-buildAgenda();
-buildAlertas();
-</script>
-</body>
-</html>
 
 buildAgenda();
 buildAlertas();
